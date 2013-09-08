@@ -42,12 +42,12 @@ one or more elements describing what you want the provider to serve
 </provider>
 ```
 
-(where you fill in your desired authority name and reference to your XML
-metadata from step #1)
+  (where you fill in your desired authority name and reference to your XML
+  metadata from step #1)
 
-Notably, the provider *must not* be exported, *must* have
-`android:grantUriPermissions="true"`, and *must* have the `<meta-data>`
-element pointing to your XML metadata.
+  Notably, the provider *must not* be exported, *must* have
+  `android:grantUriPermissions="true"`, and *must* have the `<meta-data>`
+  element pointing to your XML metadata.
 
 3. Use `FLAG_GRANT_READ_URI_PERMISSION` and `FLAG_GRANT_WRITE_URI_PERMISSION`
 in `Intent` objects you use to have third parties use the files the
