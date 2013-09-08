@@ -24,11 +24,11 @@ Usage
 Once you add the JAR to your project, it works much along the lines of
 `FileProvider`:
 
-1. Define an XML metadata file with a `<paths>` root element, containing
+- Define an XML metadata file with a `<paths>` root element, containing
 one or more elements describing what you want the provider to serve
 (described in greater detail below)
 
-2. Define a `<provider>` in your manifest as follows:
+- Define a `<provider>` in your manifest as follows:
 
 ```xml
 <provider
@@ -49,7 +49,7 @@ one or more elements describing what you want the provider to serve
   `android:grantUriPermissions="true"`, and *must* have the `<meta-data>`
   element pointing to your XML metadata.
 
-3. Use `FLAG_GRANT_READ_URI_PERMISSION` and `FLAG_GRANT_WRITE_URI_PERMISSION`
+- Use `FLAG_GRANT_READ_URI_PERMISSION` and `FLAG_GRANT_WRITE_URI_PERMISSION`
 in `Intent` objects you use to have third parties use the files the
 `StreamProvider` serves, to allow those apps selective, temporary access to
 the file.
