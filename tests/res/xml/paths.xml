@@ -1,0 +1,26 @@
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<external-path
+		name="test-external-root"
+		path="StreamProviderTests/"/>
+
+	<external-files-path name="test-external-files"/>
+
+	<external-cache-path name="test-external-cache"/>
+
+	<cache-path name="test-cache"/>
+
+	<files-path name="test-standard"/>
+
+	<raw-resource
+		name="test-raw"
+		path="something"/>
+
+  <asset
+    name="test-asset"
+    path="ic_launcher.png"/>
+
+  <asset
+    name="test-largeasset"/>
+  	
+</paths>
