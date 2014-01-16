@@ -1,9 +1,8 @@
 CWAC-Provider: Helping to Make Content Providers Sane
 ======================================================
 
-This Android library project (also
-[available as a JAR](https://github.com/commonsguy/cwac-provider/releases))
-offers an `StreamProvider`, based on Google's
+This project
+offers a `StreamProvider`, based on Google's
 [`FileProvider`](https://developer.android.com/reference/android/support/v4/content/FileProvider.html).
 Like `FileProvider`, `StreamProvider` is designed to serve up files,
 for reading and writing, through the `ContentProvider` interface
@@ -19,9 +18,29 @@ You can simply use the `StreamProvider` directly, without creating your own
 subclass &mdash; everything can be handled through configuration rather than
 coding.
 
+This Android library project is 
+[available as a JAR](https://github.com/commonsguy/cwac-provider/releases)
+or as an artifact for use with Gradle. To use that, add the following
+blocks to your `build.gradle` file:
+
+```groovy
+repositories {
+    maven {
+        url "https://repo.commonsware.com.s3.amazonaws.com"
+    }
+}
+
+dependencies {
+    compile 'com.commonsware.cwac:provider:0.2.0'
+}
+```
+
+Or, if you cannot use SSL, use `http://repo.commonsware.com` for the repository
+URL.
+
 Usage
 -----
-Once you add the JAR to your project, it works much along the lines of
+Once you add the JAR or artifact to your project, it works much along the lines of
 `FileProvider`:
 
 - Define an XML metadata file with a `<paths>` root element, containing
@@ -144,6 +163,7 @@ the fence may work, but it may not.
 
 Release Notes
 -------------
+- v0.2.0: migrated to Gradle, published AAR
 - v0.1.0: initial release
 
 Who Made This?
