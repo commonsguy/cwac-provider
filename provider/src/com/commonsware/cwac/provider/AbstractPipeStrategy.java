@@ -80,7 +80,7 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
   static class TransferOutThread extends Thread {
     InputStream in;
     OutputStream out;
-    byte[] buf=new byte[1024];
+    byte[] buf=new byte[16384];
 
     TransferOutThread(InputStream in, OutputStream out) {
       this.in=in;
@@ -92,7 +92,7 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
       int len;
 
       try {
-        while ((len=in.read(buf)) > 0) {
+        while ((len=in.read(buf)) >= 0) {
           out.write(buf, 0, len);
         }
 
