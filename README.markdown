@@ -31,12 +31,14 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.2.0'
+    compile 'com.commonsware.cwac:provider:0.2.+'
 }
 ```
 
 Or, if you cannot use SSL, use `http://repo.commonsware.com` for the repository
 URL.
+
+NOTE: The JAR name, as of v0.2.1, has a `cwac-` prefix, to help distinguish it from other JARs.
 
 Usage
 -----
@@ -145,7 +147,8 @@ file.
 Questions
 ---------
 If you have questions regarding the use of this code, please post a question
-on [StackOverflow](http://stackoverflow.com/questions/ask) tagged with `commonsware` and `android`. Be sure to indicate
+on [StackOverflow](http://stackoverflow.com/questions/ask) tagged with
+`commonsware-cwac` and `android` after [searching to see if there already is an answer](https://stackoverflow.com/search?q=[commonsware-cwac]+streamprovider). Be sure to indicate
 what CWAC module you are having issues with, and be sure to include source code 
 and stack traces if you are encountering crashes.
 
@@ -163,6 +166,7 @@ the fence may work, but it may not.
 
 Release Notes
 -------------
+- v0.2.1: updated Gradle, fixed manifest for merger, added `cwac-` prefix to JAR
 - v0.2.0: migrated to Gradle, published AAR
 - v0.1.0: initial release
 
