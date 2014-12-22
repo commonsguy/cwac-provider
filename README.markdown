@@ -131,7 +131,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.1.0 of this module, meaning it is brand new.
+This is version v0.2.2 of this module, meaning it is brand new.
 
 Demo
 ----
@@ -166,6 +166,7 @@ the fence may work, but it may not.
 
 Release Notes
 -------------
+- v0.2.2: updated for Android Studio 1.0 and new AAR publishing system
 - v0.2.1: updated Gradle, fixed manifest for merger, added `cwac-` prefix to JAR
 - v0.2.0: migrated to Gradle, published AAR
 - v0.1.0: initial release

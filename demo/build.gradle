@@ -1,13 +1,4 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.11.+'
-    }
-}
-
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 
 repositories {
     maven {
@@ -16,7 +7,8 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.2.+'
+    debugCompile project(':provider')
+    releaseCompile 'com.commonsware.cwac:provider:0.2.+'
 }
 
 android {
