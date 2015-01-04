@@ -1,5 +1,5 @@
 /***
-  Copyright (c) 2013 CommonsWare, LLC
+  Copyright (c) 2013-2014 CommonsWare, LLC
   
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -15,10 +15,12 @@
 package com.commonsware.cwac.provider;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
+import java.io.IOException;
 import java.io.InputStream;
 
-class RawResourceStrategy extends AbstractPipeStrategy {
+class RawResourceStrategy extends AFDStrategy {
   private int resourceId=-1;
   private Context appContext=null;
 
@@ -32,5 +34,11 @@ class RawResourceStrategy extends AbstractPipeStrategy {
   @Override
   InputStream getInputStream(Uri uri) {
     return(appContext.getResources().openRawResource(resourceId));
+  }
+
+  @Override
+  public AssetFileDescriptor getAssetFileDescriptor(Uri uri)
+      throws IOException {
+    return(appContext.getResources().openRawResourceFd(resourceId));
   }
 }
