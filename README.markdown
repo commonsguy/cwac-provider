@@ -158,6 +158,8 @@ wrap your `Cursor` in the `LegacyCompatCursorWrapper` (e.g.,
 It will automatically add the fake `MediaStore.MediaColumns.DATA`
 column, delegating all other requests to the underlying `Cursor`.
 
+Many thanks to Stefan Rusek for [pioneering the basic approach](http://stackoverflow.com/a/25020642/115145).
+
 Dependencies
 ------------
 This project has no dependencies.
