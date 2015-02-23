@@ -40,7 +40,7 @@ URL.
 
 NOTE: The JAR name, as of v0.2.1, has a `cwac-` prefix, to help distinguish it from other JARs.
 
-Usage
+Usage: StreamProvider
 -----
 Once you add the JAR or artifact to your project, it works much along the lines of
 `FileProvider`:
@@ -112,6 +112,29 @@ is the name of the raw resource (without file extension)
 Of course, your metadata can have one or more of each of these types as needed
 to declare what you want to be served.
 
+### Supporting Legacy Apps
+
+Some apps assume that any `content://` `Uri` that they get must be from
+the `MediaStore` or otherwise have a `MediaStore.MediaColumns.DATA`
+column that can be queried. This, of course, was never the case, and is
+less the case nowadays. But, it sometimes takes firms a while to get with
+the program, and in the meantime, `StreamProvider` could have issues
+working with such apps.
+
+Adding another `<meta-data>` element to the `<provider>`
+can help improve compatibility:
+
+```xml
+<meta-data
+  android:name="com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER"
+  android:value="true"/>
+```
+
+This tells `StreamProvider` to include a fake `MediaStore.MediaColumns.DATA`
+in the result set, with a `null` value, to try to cajole these legacy
+apps into using the `Uri` as they are supposed to: via `ContentResolver`
+and `openInputStream()`.
+
 ### Limitations
 
 Compared to `FileProvider`, `StreamProvider` has the following limitations:
@@ -125,13 +148,23 @@ a semi-colon delimited list
 - `FileProvider` has support for an additional, undocumented metadata element;
 `StreamProvider` drops support for that element
 
+Usage: LegacyCompatCursorWrapper
+-----
+For Google's `FileProvider`, or other `ContentProvider` implementations
+that also have a need for a fake `MediaStore.MediaColumns.DATA` in the
+`query()` result, this library offers `LegacyCompatCursorWrapper`. Just
+wrap your `Cursor` in the `LegacyCompatCursorWrapper` (e.g.,
+`new LegacyCompatCursorWrapper(cursor)`), and return the `LegacyCompatCursorWrapper`.
+It will automatically add the fake `MediaStore.MediaColumns.DATA`
+column, delegating all other requests to the underlying `Cursor`.
+
 Dependencies
 ------------
 This project has no dependencies.
 
 Version
 -------
-This is version v0.2.3 of this module, meaning it is pretty new.
+This is version v0.2.4 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -166,6 +199,7 @@ the fence may work, but it may not.
 
 Release Notes
 -------------
+- v0.2.4: added `LegacyCompatCursorWrapper` and `USE_LEGACY_CURSOR_WRAPPER`
 - v0.2.3: resolved issue #8, supporting actual length for assets and raw resources
 - v0.2.2: updated for Android Studio 1.0 and new AAR publishing system
 - v0.2.1: updated Gradle, fixed manifest for merger, added `cwac-` prefix to JAR
