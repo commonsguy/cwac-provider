@@ -38,6 +38,8 @@ public class StreamProvider extends ContentProvider {
       OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
   private static final String META_DATA_FILE_PROVIDER_PATHS=
       "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
+  private static final String META_DATA_USE_LEGACY_CURSOR_WRAPPER=
+      "com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER";
   private static final String TAG_FILES_PATH="files-path";
   private static final String TAG_CACHE_PATH="cache-path";
   private static final String TAG_EXTERNAL="external-path";
@@ -50,6 +52,7 @@ public class StreamProvider extends ContentProvider {
   private static final String ATTR_PATH="path";
 
   private CompositeStreamStrategy strategy;
+  private boolean useLegacyCursorWrapper=false;
 
   @Override
   public boolean onCreate() {
@@ -106,7 +109,11 @@ public class StreamProvider extends ContentProvider {
 
     cursor.addRow(values);
 
-    return(cursor);
+    if (!useLegacyCursorWrapper) {
+      return(cursor);
+    }
+
+    return(new LegacyCompatCursorWrapper(cursor));
   }
 
   @Override
@@ -152,6 +159,9 @@ public class StreamProvider extends ContentProvider {
         context.getPackageManager()
                .resolveContentProvider(authority,
                                        PackageManager.GET_META_DATA);
+
+    useLegacyCursorWrapper=info.metaData.getBoolean(META_DATA_USE_LEGACY_CURSOR_WRAPPER, true);
+
     final XmlResourceParser in=
         info.loadXmlMetaData(context.getPackageManager(),
                              META_DATA_FILE_PROVIDER_PATHS);

@@ -37,6 +37,9 @@
 			<meta-data
 				android:name="com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS"
 				android:resource="@xml/paths"/>
+      <meta-data
+        android:name="com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER"
+        android:value="true"/>
 		</provider>
 	</application>
 
