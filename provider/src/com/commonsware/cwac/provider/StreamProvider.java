@@ -63,13 +63,7 @@ public class StreamProvider extends ContentProvider {
   public void attachInfo(Context context, ProviderInfo info) {
     super.attachInfo(context, info);
 
-    // Sanity check our security
-    if (info.exported) {
-      throw new SecurityException("Provider must not be exported");
-    }
-    if (!info.grantUriPermissions) {
-      throw new SecurityException("Provider must grant Uri permissions");
-    }
+    checkSecurity(info);
 
     try {
       strategy=parseStreamStrategy(context, info.authority);
@@ -77,6 +71,17 @@ public class StreamProvider extends ContentProvider {
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to parse "
           + META_DATA_FILE_PROVIDER_PATHS + " meta-data", e);
+    }
+  }
+
+  protected void checkSecurity(ProviderInfo info) {
+    // Sanity check our security
+    if (info.exported) {
+      throw new SecurityException("Provider must not be exported");
+    }
+
+    if (!info.grantUriPermissions) {
+      throw new SecurityException("Provider must grant Uri permissions");
     }
   }
 
