@@ -166,7 +166,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.2.4 of this module, meaning it is pretty new.
+This is version v0.2.5 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -201,6 +201,7 @@ the fence may work, but it may not.
 
 Release Notes
 -------------
+- v0.2.5: pulled out permissions check into separate method
 - v0.2.4: added `LegacyCompatCursorWrapper` and `USE_LEGACY_CURSOR_WRAPPER`
 - v0.2.3: resolved issue #8, supporting actual length for assets and raw resources
 - v0.2.2: updated for Android Studio 1.0 and new AAR publishing system
