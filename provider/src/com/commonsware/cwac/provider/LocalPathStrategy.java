@@ -15,6 +15,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.webkit.MimeTypeMap;
@@ -74,6 +75,17 @@ public class LocalPathStrategy implements StreamStrategy {
     final int fileMode=modeToMode(mode);
     
     return(ParcelFileDescriptor.open(file, fileMode));
+  }
+
+  @Override
+  public boolean hasAFD(Uri uri) {
+    return(false);
+  }
+
+  @Override
+  public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+    throws FileNotFoundException {
+    throw new IllegalStateException("Not supported");
   }
 
   @Override

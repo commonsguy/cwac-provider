@@ -20,6 +20,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.res.AssetFileDescriptor;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.MatrixCursor;
@@ -153,6 +154,16 @@ public class StreamProvider extends ContentProvider {
   public ParcelFileDescriptor openFile(Uri uri, String mode)
                                                             throws FileNotFoundException {
     return(strategy.openFile(uri, mode));
+  }
+
+  @Override
+  public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+    throws FileNotFoundException {
+    if (strategy.hasAFD(uri)) {
+      return(strategy.openAssetFile(uri, mode));
+    }
+
+    return(super.openAssetFile(uri, mode));
   }
 
   private CompositeStreamStrategy parseStreamStrategy(Context context,

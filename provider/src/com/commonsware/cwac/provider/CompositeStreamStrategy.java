@@ -14,6 +14,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import java.io.FileNotFoundException;
@@ -69,6 +70,29 @@ public class CompositeStreamStrategy implements StreamStrategy {
 
     if (strategy != null) {
       return(strategy.openFile(uri, mode));
+    }
+
+    return(null);
+  }
+
+  @Override
+  public boolean hasAFD(Uri uri) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.hasAFD(uri));
+    }
+
+    return(false);
+  }
+
+  @Override
+  public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+    throws FileNotFoundException {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.openAssetFile(uri, mode));
     }
 
     return(null);

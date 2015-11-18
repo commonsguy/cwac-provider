@@ -49,6 +49,7 @@ class AssetStrategy extends AFDStrategy {
 
     if (path != null) {
       fullPathBuilder.append(path);
+      fullPathBuilder.append('/');
     }
 
     List<String> segments=new ArrayList<String>(uri.getPathSegments());

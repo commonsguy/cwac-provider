@@ -17,6 +17,7 @@ package com.commonsware.cwac.provider;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.util.Log;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 abstract class AFDStrategy extends AbstractPipeStrategy {
@@ -38,5 +39,21 @@ abstract class AFDStrategy extends AbstractPipeStrategy {
     }
 
     return(result);
+  }
+
+  @Override
+  public boolean hasAFD(Uri uri) {
+    return(true);
+  }
+
+  @Override
+  public AssetFileDescriptor openAssetFile(Uri uri, String mode)
+    throws FileNotFoundException {
+    try {
+      return(getAssetFileDescriptor(uri));
+    }
+    catch (IOException e) {
+      throw new IllegalStateException("Attempted to open uri failed for "+uri.toString(), e);
+    }
   }
 }
