@@ -135,6 +135,26 @@ in the result set, with a `null` value, to try to cajole these legacy
 apps into using the `Uri` as they are supposed to: via `ContentResolver`
 and `openInputStream()`.
 
+### Gradle Settings
+
+Starting with version 0.3.0 of the library, for files you are looking
+to share from your app's `assets/`, you will need to teach the build
+system to avoid compressing those files. On the plus side, we can
+now use `AssetFileDescriptor` for those, and greatly improve compatibility
+with apps using our streams.
+
+To do this, add the following closure to your `android` closure
+in your module's `build.gradle` file:
+
+```groovy
+aaptOptions {
+    noCompress 'pdf', 'mp4', 'ogg'
+}
+```
+
+(here, the file extensions are from the demo app &mdash; you would
+list the file extensions that you are looking to share)
+
 ### Limitations
 
 Compared to `FileProvider`, `StreamProvider` has the following limitations:
@@ -166,12 +186,12 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.2.5 of this module, meaning it is pretty new.
+This is version v0.3.0 of this module, meaning it is pretty new.
 
 Demo
 ----
 In the `demo/` sub-project you will find a sample project demonstrating the use
-of `StreamProvider`. The `tests/` sub-project holds a JUnit instrumentation test suite.
+of `StreamProvider`.
 
 License
 -------
@@ -206,6 +226,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.3.0: switched to `openAssetFile()` where possible for better compatibility
 - v0.2.5: pulled out permissions check into separate method
 - v0.2.4: added `LegacyCompatCursorWrapper` and `USE_LEGACY_CURSOR_WRAPPER`
 - v0.2.3: resolved issue #8, supporting actual length for assets and raw resources
