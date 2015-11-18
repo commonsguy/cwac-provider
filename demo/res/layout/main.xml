@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:orientation="vertical"
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  >
-  <WebView android:id="@+id/webkit"
-    android:layout_width="match_parent" 
-    android:layout_height="match_parent" 
-  />
+  android:orientation="vertical">
+
+  <Spinner
+    android:id="@+id/assets"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"/>
+
+  <Button
+    android:id="@+id/view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:onClick="viewAsset"
+    android:text="@string/btn_view"/>
+
+  <Button
+    android:id="@+id/send"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:onClick="sendAsset"
+    android:text="@string/btn_send"/>
 </LinearLayout>

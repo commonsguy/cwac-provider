@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string-array name="assets">
+    <item>20KB PDF</item>
+    <item>180KB PDF</item>
+    <item>100KB OGG</item>
+    <item>6.2MB MP4</item>
+  </string-array>
+</resources>

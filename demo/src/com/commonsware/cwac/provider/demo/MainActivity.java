@@ -18,22 +18,70 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 public class MainActivity extends Activity {
   private static final Uri PROVIDER=
       Uri.parse("content://com.commonsware.cwac.provider.demo");
+  private static final String[] ASSET_PATHS={
+    "assets/help.pdf",
+    "assets/test.pdf",
+    "assets/test.ogg",
+    "assets/test.mp4"
+  };
+  private Spinner assetSpinner;
 
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
+    setContentView(R.layout.main);
 
+    assetSpinner=(Spinner)findViewById(R.id.assets);
+    ArrayAdapter<String> adapter=
+      new ArrayAdapter<String>(this,
+        android.R.layout.simple_spinner_item,
+        getResources().getStringArray(R.array.assets));
+
+    adapter
+      .setDropDownViewResource(
+        android.R.layout.simple_spinner_dropdown_item);
+    assetSpinner.setAdapter(adapter);
+  }
+
+  public void viewAsset(View v) {
+    String path=ASSET_PATHS[assetSpinner.getSelectedItemPosition()];
     Intent i=
         new Intent(Intent.ACTION_VIEW, PROVIDER.buildUpon()
-                                               .appendPath("help.pdf")
+                                               .path(path)
                                                .build());
 
     i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     startActivity(i);
-    finish();
+  }
+
+  public void sendAsset(View v) {
+    String path=ASSET_PATHS[assetSpinner.getSelectedItemPosition()];
+    Intent share=new Intent(Intent.ACTION_SEND);
+    String extension=null;
+    int i=path.lastIndexOf('.');
+
+    if (i>0) {
+      extension=path.substring(i+1);
+    }
+
+    if (extension!=null) {
+      share.setType(
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+          extension));
+    }
+
+    share.putExtra(Intent.EXTRA_STREAM,
+      PROVIDER.buildUpon().path(path).build());
+    share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+    startActivity(Intent.createChooser(share, "Share Asset"));
   }
 }
