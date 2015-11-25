@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.2.+'
+    compile 'com.commonsware.cwac:provider:0.3.+'
 }
 ```
 
