@@ -165,9 +165,6 @@ a semi-colon delimited list
 - There is no `getUriForFile()` utility method, as not everything served by
 `StreamProvider` is a `File`
 
-- `FileProvider` has support for an additional, undocumented metadata element;
-`StreamProvider` drops support for that element
-
 Usage: LegacyCompatCursorWrapper
 -----
 For Google's `FileProvider`, or other `ContentProvider` implementations
