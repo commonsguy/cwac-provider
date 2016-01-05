@@ -20,6 +20,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.ContentValues;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -27,6 +28,10 @@ import java.io.FileNotFoundException;
 
 public interface StreamStrategy {
   public String getType(Uri uri);
+
+  public boolean canInsert(Uri uri);
+
+  public Uri insert(Uri uri, ContentValues values);
 
   public boolean canDelete(Uri uri);
 

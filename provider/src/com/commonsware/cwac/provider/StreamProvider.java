@@ -133,7 +133,12 @@ public class StreamProvider extends ContentProvider {
 
   @Override
   public Uri insert(Uri uri, ContentValues values) {
-    throw new UnsupportedOperationException("No external inserts");
+    Uri result=null;
+    if (strategy.canInsert(uri)) {
+      result=strategy.insert(uri, values);
+    }
+
+    return(result);
   }
 
   @Override
