@@ -41,6 +41,7 @@ public class StreamProvider extends ContentProvider {
       "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
   private static final String META_DATA_USE_LEGACY_CURSOR_WRAPPER=
       "com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER";
+  private static final String TAG_ROOT_PATH="root-path";
   private static final String TAG_FILES_PATH="files-path";
   private static final String TAG_CACHE_PATH="cache-path";
   private static final String TAG_EXTERNAL="external-path";
@@ -51,6 +52,7 @@ public class StreamProvider extends ContentProvider {
   private static final String TAG_ASSET="asset";
   private static final String ATTR_NAME="name";
   private static final String ATTR_PATH="path";
+  private static final File DEVICE_ROOT=new File("/");
 
   private CompositeStreamStrategy strategy;
   private boolean useLegacyCursorWrapper=false;
@@ -239,7 +241,10 @@ public class StreamProvider extends ContentProvider {
                                               String tag, String path) {
     File target=null;
 
-    if (TAG_FILES_PATH.equals(tag)) {
+    if (TAG_ROOT_PATH.equals(tag)) {
+      target=buildPath(DEVICE_ROOT, path);
+    }
+    else if (TAG_FILES_PATH.equals(tag)) {
       target=buildPath(context.getFilesDir(), path);
     }
     else if (TAG_CACHE_PATH.equals(tag)) {
