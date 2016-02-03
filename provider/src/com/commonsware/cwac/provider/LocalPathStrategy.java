@@ -27,16 +27,7 @@ public class LocalPathStrategy implements StreamStrategy {
   private File root=null;
 
   public LocalPathStrategy(File root) {
-    try {
-      root=root.getCanonicalFile();
-    }
-    catch (IOException e) {
-      throw new IllegalArgumentException(
-                                         "Failed to resolve canonical path for "
-                                             + root, e);
-    }
-
-    this.root=root;
+    this.root=root.getAbsoluteFile();
   }
 
   @Override
