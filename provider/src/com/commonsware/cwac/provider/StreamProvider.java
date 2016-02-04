@@ -119,7 +119,7 @@ public class StreamProvider extends ContentProvider {
       return(cursor);
     }
 
-    return(new LegacyCompatCursorWrapper(cursor));
+    return(new LegacyCompatCursorWrapper(cursor, getType(uri)));
   }
 
   @Override

@@ -16,14 +16,23 @@ package com.commonsware.cwac.provider.demo;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TextView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity
+  implements AdapterView.OnItemSelectedListener {
   private static final Uri PROVIDER=
       Uri.parse("content://com.commonsware.cwac.provider.demo");
   private static final String[] ASSET_PATHS={
@@ -32,14 +41,25 @@ public class MainActivity extends Activity {
     "assets/test.ogg",
     "assets/test.mp4"
   };
+  private static final String[] PROJECTION={
+    OpenableColumns.DISPLAY_NAME,
+    MediaStore.MediaColumns.DATA,
+    MediaStore.MediaColumns.MIME_TYPE,
+    OpenableColumns.SIZE
+  };
   private Spinner assetSpinner;
+  private TableLayout cursorTable;
 
   @Override
   public void onCreate(Bundle icicle) {
     super.onCreate(icicle);
     setContentView(R.layout.main);
 
+    cursorTable=(TableLayout)findViewById(R.id.cursor);
+
     assetSpinner=(Spinner)findViewById(R.id.assets);
+    assetSpinner.setOnItemSelectedListener(this);
+
     ArrayAdapter<String> adapter=
       new ArrayAdapter<String>(this,
         android.R.layout.simple_spinner_item,
@@ -51,12 +71,19 @@ public class MainActivity extends Activity {
     assetSpinner.setAdapter(adapter);
   }
 
+  @Override
+  public void onItemSelected(AdapterView<?> parent, View view,
+                             int position, long id) {
+    populateCursorTable();
+  }
+
+  @Override
+  public void onNothingSelected(AdapterView<?> parent) {
+    // no-op
+  }
+
   public void viewAsset(View v) {
-    String path=ASSET_PATHS[assetSpinner.getSelectedItemPosition()];
-    Intent i=
-        new Intent(Intent.ACTION_VIEW, PROVIDER.buildUpon()
-                                               .path(path)
-                                               .build());
+    Intent i=new Intent(Intent.ACTION_VIEW, getUri());
 
     i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
     startActivity(i);
@@ -78,10 +105,59 @@ public class MainActivity extends Activity {
           extension));
     }
 
-    share.putExtra(Intent.EXTRA_STREAM,
-      PROVIDER.buildUpon().path(path).build());
+    share.putExtra(Intent.EXTRA_STREAM, getUri());
     share.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
     startActivity(Intent.createChooser(share, "Share Asset"));
+  }
+
+  private Uri getUri() {
+    String path=ASSET_PATHS[assetSpinner.getSelectedItemPosition()];
+
+    return(PROVIDER.buildUpon().path(path).build());
+  }
+
+  private void populateCursorTable() {
+    Cursor c=getContentResolver().query(getUri(), PROJECTION,
+      null, null, null);
+    LayoutInflater inflater=getLayoutInflater();
+
+    c.moveToFirst();
+    cursorTable.removeAllViews();
+
+    for (int i=0;i<c.getColumnCount();i++) {
+      View row=inflater.inflate(R.layout.row, cursorTable, false);
+      TextView name=(TextView)row.findViewById(R.id.name);
+      TextView value=(TextView)row.findViewById(R.id.value);
+
+      name.setText(c.getColumnName(i));
+
+      switch (c.getType(i)) {
+        case Cursor.FIELD_TYPE_STRING:
+          String text=c.getString(i);
+
+          if (text==null) {
+            value.setText("null");
+            value.setTypeface(null, Typeface.ITALIC);
+          }
+          else {
+            value.setText(text);
+          }
+
+          break;
+
+        case Cursor.FIELD_TYPE_INTEGER:
+          value.setText(Integer.toString(c.getInt(i)));
+          break;
+
+        default:
+          value.setText("**UNEXPECTED TYPE**: "+
+            Integer.toString(c.getType(i)));
+          value.setTypeface(null, Typeface.ITALIC);
+          break;
+      }
+
+      cursorTable.addView(row);
+    }
   }
 }
