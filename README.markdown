@@ -170,13 +170,24 @@ a semi-colon delimited list
 
 Usage: LegacyCompatCursorWrapper
 -----
+Some consumers of `content://` `Uri` values make unfortunate assumptions,
+that they can `query()` on that `Uri` and get columns back other
+than those in `OpenableColumns`. Of note, one or more popular consumers
+request:
+
+- `MediaStore.MediaColumns.DATA` (erroneously thinking that the
+`Uri` must be known to the `MediaStore`)
+
+- `MediaStore.MediaColumns.MIME_TYPE` (rather than calling `getType()`
+on a `ContentResolver`, the way talented developers would)
+
 For Google's `FileProvider`, or other `ContentProvider` implementations
-that also have a need for a fake `MediaStore.MediaColumns.DATA` in the
+that also have a need for these fake columns in the
 `query()` result, this library offers `LegacyCompatCursorWrapper`. Just
 wrap your `Cursor` in the `LegacyCompatCursorWrapper` (e.g.,
 `new LegacyCompatCursorWrapper(cursor)`), and return the `LegacyCompatCursorWrapper`.
-It will automatically add the fake `MediaStore.MediaColumns.DATA`
-column, delegating all other requests to the underlying `Cursor`.
+It will automatically add the fake columns for queries that
+request them, delegating all other requests to the underlying `Cursor`.
 
 Many thanks to Stefan Rusek for [pioneering the basic approach](http://stackoverflow.com/a/25020642/115145).
 
@@ -186,7 +197,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.3.0 of this module, meaning it is pretty new.
+This is version v0.3.1 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -226,6 +237,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.3.1: fixed local path bug, added support for `MediaStore.MediaColumns.MIME_TYPE` to `LegacyCompatCursorWrapper`
 - v0.3.0: switched to `openAssetFile()` where possible for better compatibility
 - v0.2.5: pulled out permissions check into separate method
 - v0.2.4: added `LegacyCompatCursorWrapper` and `USE_LEGACY_CURSOR_WRAPPER`
