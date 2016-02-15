@@ -14,6 +14,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.ContentValues;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -39,6 +40,31 @@ public class CompositeStreamStrategy implements StreamStrategy {
     }
 
     return(result);
+  }
+
+  @Override
+  public boolean canInsert(Uri uri) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.canInsert(uri));
+    }
+
+    return(false);
+  }
+
+  @Override
+  public Uri insert(Uri uri, ContentValues values) {
+    Uri result=null;
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      if (strategy.canInsert(uri)) {
+        result=strategy.insert(uri, values);
+      }
+    }
+
+    return (result);
   }
 
   @Override
@@ -118,6 +144,17 @@ public class CompositeStreamStrategy implements StreamStrategy {
     }
 
     return(-1);
+  }
+
+  @Override
+  public long getLastModified(Uri uri) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.getLastModified(uri));
+    }
+
+    return(0);
   }
 
   private StreamStrategy getStrategy(Uri uri)

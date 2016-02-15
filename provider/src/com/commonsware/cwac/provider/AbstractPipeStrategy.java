@@ -14,6 +14,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.ContentValues;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
@@ -30,6 +31,16 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
   @Override
   public String getType(Uri uri) {
     return(MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(uri.toString())));
+  }
+
+  @Override
+  public boolean canInsert(Uri uri) {
+    return(false);
+  }
+
+  @Override
+  public Uri insert(Uri uri, ContentValues values) {
+    throw new UnsupportedOperationException("Cannot insert a stream");
   }
 
   @Override
@@ -75,6 +86,11 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
   @Override
   public long getLength(Uri uri) {
     return(-1);
+  }
+
+  @Override
+  public long getLastModified(Uri uri) {
+    return(0);
   }
 
   static class TransferOutThread extends Thread {
