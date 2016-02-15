@@ -61,7 +61,7 @@ public class LocalPathStrategy implements StreamStrategy {
 
   @Override
   public boolean canInsert(Uri uri) {
-    return(getFileForUri(uri).canWrite());
+    return (true);
   }
 
   @Override
@@ -128,6 +128,11 @@ public class LocalPathStrategy implements StreamStrategy {
   @Override
   public long getLength(Uri uri) {
     return(getFileForUri(uri).length());
+  }
+
+  @Override
+  public long getLastModified(Uri uri) {
+    return(getFileForUri(uri).lastModified());
   }
 
   private File getFileForUri(Uri uri) {

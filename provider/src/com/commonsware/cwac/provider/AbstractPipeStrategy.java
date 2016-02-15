@@ -88,6 +88,11 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
     return(-1);
   }
 
+  @Override
+  public long getLastModified(Uri uri) {
+    return(0);
+  }
+
   static class TransferOutThread extends Thread {
     InputStream in;
     OutputStream out;

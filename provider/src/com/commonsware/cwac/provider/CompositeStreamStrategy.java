@@ -146,6 +146,17 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(-1);
   }
 
+  @Override
+  public long getLastModified(Uri uri) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.getLastModified(uri));
+    }
+
+    return(0);
+  }
+
   private StreamStrategy getStrategy(Uri uri)
                                              throws IllegalArgumentException {
     String path=uri.getPath();

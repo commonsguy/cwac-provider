@@ -35,8 +35,10 @@ import java.io.IOException;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class StreamProvider extends ContentProvider {
+  public static final String LAST_MODIFIED = "_modified";
+
   private static final String[] COLUMNS= {
-      OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
+      OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE, LAST_MODIFIED };
   private static final String META_DATA_FILE_PROVIDER_PATHS=
       "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
   private static final String META_DATA_USE_LEGACY_CURSOR_WRAPPER=
@@ -107,6 +109,10 @@ public class StreamProvider extends ContentProvider {
       else if (OpenableColumns.SIZE.equals(col)) {
         cols[i]=OpenableColumns.SIZE;
         values[i++]=strategy.getLength(uri);
+      }
+      else if (LAST_MODIFIED.equals(col)) {
+        cols[i]=LAST_MODIFIED;
+        values[i++]=strategy.getLastModified(uri);
       }
     }
 

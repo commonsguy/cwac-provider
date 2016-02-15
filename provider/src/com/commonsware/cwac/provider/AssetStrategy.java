@@ -17,7 +17,6 @@ package com.commonsware.cwac.provider;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
-import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;

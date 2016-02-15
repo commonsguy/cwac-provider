@@ -44,6 +44,8 @@ public interface StreamStrategy {
 
   public long getLength(Uri uri);
 
+  public long getLastModified(Uri uri);
+
   boolean hasAFD(Uri uri);
 
   public AssetFileDescriptor openAssetFile(Uri uri, String mode)
