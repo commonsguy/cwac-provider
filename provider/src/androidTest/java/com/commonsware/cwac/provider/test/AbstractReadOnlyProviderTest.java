@@ -12,7 +12,7 @@
   limitations under the License.
  */
 
-package com.commonsware.cwac.provider;
+package com.commonsware.cwac.provider.test;
 
 import android.content.res.Resources.NotFoundException;
 import android.net.Uri;
@@ -22,11 +22,10 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
-abstract class AbstractReadWriteProviderTest extends AndroidTestCase {
-  abstract public String getPrefix();
-  abstract void assertFileExists(String filename);
+abstract class AbstractReadOnlyProviderTest extends AndroidTestCase {
+  abstract public InputStream getOriginal() throws IOException;
+  abstract public Uri getStreamSource();
   
   protected void setUp() throws Exception {
     super.setUp();
@@ -36,46 +35,12 @@ abstract class AbstractReadWriteProviderTest extends AndroidTestCase {
     super.tearDown();
   }
 
-  public void testWriteAndRead() throws NotFoundException, IOException {
-    doWriteAndRead("ic_launcher.png", "__test_output.png");
-  }
-
-  public void testWriteAndReadLarge() throws NotFoundException, IOException {
-    doWriteAndRead("test.mp4", "__test_output.mp4");
-  }
-
-  public void doWriteAndRead(String original, String out) throws NotFoundException, IOException {
-    Uri output=
-        getRoot().buildUpon().appendPath(getPrefix())
-                 .appendEncodedPath(out).build();
-
-    try {
-      OutputStream testOutput=
-          getContext().getContentResolver().openOutputStream(output);
-
-      assertNotNull(testOutput);
-      copy(getContext().getResources().getAssets()
-                       .open(original), testOutput);
-      assertFileExists(out);
-      compareStreamToAsset(output, original);
-    }
-    finally {
-      getContext().getContentResolver().delete(output, null, null);
-    }
-  }
-
-  public void compareStreamToAsset(Uri stream, String assetName)
-                                                                throws NotFoundException,
-                                                                IOException {
+  public void testRead() throws NotFoundException, IOException {
     InputStream testInput=
-        getContext().getContentResolver().openInputStream(stream);
+        getContext().getContentResolver().openInputStream(getStreamSource());
+    InputStream testComparison=getOriginal();
 
-    assertNotNull(testInput);
-
-    InputStream testCompare=
-        getContext().getResources().getAssets().open(assetName);
-
-    assertTrue(isEqual(testInput, testCompare));
+    assertTrue(isEqual(testInput, testComparison));
   }
 
   // from http://stackoverflow.com/a/4245881/115145
@@ -112,18 +77,6 @@ abstract class AbstractReadWriteProviderTest extends AndroidTestCase {
   }
 
   protected Uri getRoot() {
-    return(Uri.parse("content://com.commonsware.cwac.provider.test"));
-  }
-  
-  static void copy(InputStream in, OutputStream out) throws IOException {
-    byte[] buf=new byte[1024];
-    int len;
-
-    while ((len=in.read(buf)) > 0) {
-      out.write(buf, 0, len);
-    }
-
-    in.close();
-    out.close();
+    return(Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX));
   }
 }

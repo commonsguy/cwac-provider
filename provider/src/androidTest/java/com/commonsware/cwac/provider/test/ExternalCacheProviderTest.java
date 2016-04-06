@@ -12,20 +12,20 @@
   limitations under the License.
  */
 
-package com.commonsware.cwac.provider;
+package com.commonsware.cwac.provider.test;
 
 import java.io.File;
 
-public class StandardFilesProviderTest extends AbstractReadWriteProviderTest {
+public class ExternalCacheProviderTest extends AbstractReadWriteProviderTest {
   @Override
   public String getPrefix() {
-    return("test-standard");
+    return("test-external-cache");
   }
 
   @Override
   void assertFileExists(String fileName) {
     File testFile=
-        new File(getContext().getFilesDir(), fileName);
+        new File(getContext().getExternalCacheDir(), fileName);
 
     assertTrue(testFile.exists());
   }

@@ -12,21 +12,21 @@
   limitations under the License.
  */
 
-package com.commonsware.cwac.provider;
+package com.commonsware.cwac.provider.test;
 
-import java.io.File;
+import android.net.Uri;
+import java.io.IOException;
+import java.io.InputStream;
 
-public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
+public class AssetProviderTest extends
+    AbstractReadOnlyProviderTest {
   @Override
-  public String getPrefix() {
-    return("test-external-files");
+  public InputStream getOriginal() throws IOException {
+    return(getContext().getAssets().open("ic_launcher.png"));
   }
 
   @Override
-  void assertFileExists(String fileName) {
-    File testFile=
-        new File(getContext().getExternalFilesDir(null), fileName);
-
-    assertTrue(testFile.exists());
+  public Uri getStreamSource() {
+    return(getRoot().buildUpon().appendPath("test-asset").build());
   }
 }

@@ -1,6 +1,6 @@
 /***
   Copyright (C) 2013 The Android Open Source Project
-  Portions Copyright (c) 2013 CommonsWare, LLC
+  Portions Copyright (c) 2013-2016 CommonsWare, LLC
   
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -32,6 +32,8 @@ import android.text.TextUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class StreamProvider extends ContentProvider {
@@ -89,6 +91,8 @@ public class StreamProvider extends ContentProvider {
   @Override
   public Cursor query(Uri uri, String[] projection, String selection,
                       String[] selectionArgs, String sortOrder) {
+    uri=normalize(uri);
+
     if (projection == null) {
       projection=COLUMNS;
     }
@@ -124,7 +128,7 @@ public class StreamProvider extends ContentProvider {
 
   @Override
   public String getType(Uri uri) {
-    String result=strategy.getType(uri);
+    String result=strategy.getType(normalize(uri));
 
     return(result == null ? "application/octet-stream" : result);
   }
@@ -142,6 +146,8 @@ public class StreamProvider extends ContentProvider {
 
   @Override
   public int delete(Uri uri, String selection, String[] selectionArgs) {
+    uri=normalize(uri);
+
     if (strategy.canDelete(uri)) {
       strategy.delete(uri);
       return(1);
@@ -153,14 +159,16 @@ public class StreamProvider extends ContentProvider {
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
     throws FileNotFoundException {
-    return(strategy.openFile(uri, mode));
+    return(strategy.openFile(normalize(uri), mode));
   }
 
   @Override
   public AssetFileDescriptor openAssetFile(Uri uri, String mode)
     throws FileNotFoundException {
-    if (strategy.hasAFD(uri)) {
-      return(strategy.openAssetFile(uri, mode));
+    Uri normalized=normalize(uri);
+
+    if (strategy.hasAFD(normalized)) {
+      return(strategy.openAssetFile(normalized, mode));
     }
 
     return(super.openAssetFile(uri, mode));
@@ -217,6 +225,10 @@ public class StreamProvider extends ContentProvider {
     return(result);
   }
 
+  protected String getUriPrefix() {
+    return("this_is_the_prefix");
+  }
+
   protected StreamStrategy buildStrategy(Context context, String tag,
                                          String path)
     throws IOException {
@@ -265,6 +277,21 @@ public class StreamProvider extends ContentProvider {
 
   protected CompositeStreamStrategy buildCompositeStrategy() {
     return(new CompositeStreamStrategy());
+  }
+
+  private Uri normalize(Uri input) {
+    List<String> segments=new ArrayList<String>(input.getPathSegments());
+
+    if (getUriPrefix().equals(segments.get(0))) {
+      segments.remove(0);
+
+      return(input
+        .buildUpon()
+        .path(TextUtils.join("/", segments))
+        .build());
+    }
+
+    throw new IllegalArgumentException("Unrecognized Uri: "+input.toString());
   }
 
   private static File buildPath(File base, String... segments) {

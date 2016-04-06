@@ -12,22 +12,21 @@
   limitations under the License.
  */
 
+package com.commonsware.cwac.provider.test;
 
-package com.commonsware.cwac.provider;
+import java.io.File;
 
-import android.net.Uri;
-import java.io.InputStream;
-import com.commonsware.cwac.provider.test.R;
-
-public class RawResourceProviderTest extends
-    AbstractReadOnlyProviderTest {
+public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
   @Override
-  public InputStream getOriginal() {
-    return(getContext().getResources().openRawResource(R.raw.something));
+  public String getPrefix() {
+    return("test-external-files");
   }
 
   @Override
-  public Uri getStreamSource() {
-    return(getRoot().buildUpon().appendPath("test-raw").build());
+  void assertFileExists(String fileName) {
+    File testFile=
+        new File(getContext().getExternalFilesDir(null), fileName);
+
+    assertTrue(testFile.exists());
   }
 }

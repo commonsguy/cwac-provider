@@ -12,7 +12,7 @@
   limitations under the License.
  */
 
-package com.commonsware.cwac.provider;
+package com.commonsware.cwac.provider.test;
 
 import android.os.Environment;
 import java.io.File;
