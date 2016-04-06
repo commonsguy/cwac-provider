@@ -18,6 +18,7 @@ package com.commonsware.cwac.provider;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;
@@ -34,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class StreamProvider extends ContentProvider {
@@ -53,12 +55,19 @@ public class StreamProvider extends ContentProvider {
   private static final String TAG_ASSET="asset";
   private static final String ATTR_NAME="name";
   private static final String ATTR_PATH="path";
+  private static final String PREF_URI_PREFIX="uriPrefix";
 
   private CompositeStreamStrategy strategy;
   private boolean useLegacyCursorWrapper=false;
+  private SharedPreferences prefs;
 
   @Override
   public boolean onCreate() {
+    prefs=
+      getContext()
+        .getSharedPreferences(BuildConfig.APPLICATION_ID,
+          Context.MODE_PRIVATE);
+
     return(true);
   }
 
@@ -226,7 +235,18 @@ public class StreamProvider extends ContentProvider {
   }
 
   protected String getUriPrefix() {
-    return("this_is_the_prefix");
+    String prefix=prefs.getString(PREF_URI_PREFIX, null);
+
+    if (prefix==null) {
+      prefix=buildUriPrefix();
+      prefs.edit().putString(PREF_URI_PREFIX, prefix).apply();
+    }
+
+    return(prefix);
+  }
+
+  protected String buildUriPrefix() {
+    return(UUID.randomUUID().toString());
   }
 
   protected StreamStrategy buildStrategy(Context context, String tag,
