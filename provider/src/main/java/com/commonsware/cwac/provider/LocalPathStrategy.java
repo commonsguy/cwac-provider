@@ -26,8 +26,8 @@ import java.io.IOException;
 public class LocalPathStrategy implements StreamStrategy {
   private File root=null;
 
-  public LocalPathStrategy(File root) {
-    this.root=root.getAbsoluteFile();
+  public LocalPathStrategy(File root) throws IOException {
+    this.root=root.getCanonicalFile();
   }
 
   @Override

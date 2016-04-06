@@ -219,7 +219,8 @@ public class StreamProvider extends ContentProvider {
   }
 
   protected StreamStrategy buildStrategy(Context context, String tag,
-                                         String path) {
+                                         String path)
+    throws IOException {
     StreamStrategy result=null;
 
     if (TAG_RAW.equals(tag)) {
@@ -236,7 +237,8 @@ public class StreamProvider extends ContentProvider {
   }
 
   protected StreamStrategy buildLocalStrategy(Context context,
-                                              String tag, String path) {
+                                              String tag, String path)
+    throws IOException {
     File target=null;
 
     if (TAG_FILES_PATH.equals(tag)) {

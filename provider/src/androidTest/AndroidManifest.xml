@@ -6,15 +6,9 @@
 
 	<uses-sdk android:minSdkVersion="8"/>
 
-	<instrumentation
-		android:name="android.test.InstrumentationTestRunner"
-		android:targetPackage="com.commonsware.cwac.provider.test"/>
-
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
 	<application>
-		<uses-library android:name="android.test.runner"/>
-
 		<provider
 			android:name="com.commonsware.cwac.provider.StreamProvider"
 			android:authorities="com.commonsware.cwac.provider.test"

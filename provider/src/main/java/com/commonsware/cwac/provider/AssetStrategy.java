@@ -17,6 +17,7 @@ package com.commonsware.cwac.provider;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,29 +45,15 @@ class AssetStrategy extends AFDStrategy {
   }
 
   private String getAssetPath(Uri uri) {
-    boolean isFirst=true;
-    StringBuilder fullPathBuilder=new StringBuilder();
-
-    if (path != null) {
-      fullPathBuilder.append(path);
-      fullPathBuilder.append('/');
-    }
-
     List<String> segments=new ArrayList<String>(uri.getPathSegments());
 
-    segments.remove(0); // get rid of first segment
-
-    for (String segment : segments) {
-      if (isFirst) {
-        isFirst=false;
-        fullPathBuilder.append(segment);
-      }
-      else if (!"..".equals(segment)) {
-        fullPathBuilder.append('/');
-        fullPathBuilder.append(segment);
-      }
+    if (path==null) {
+      segments.remove(0);
+    }
+    else {
+      segments.set(0, path);
     }
 
-    return(fullPathBuilder.toString());
+    return(TextUtils.join("/", segments));
   }
 }
