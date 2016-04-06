@@ -26,8 +26,8 @@ public class LargeAssetProviderTest extends
   }
 
   @Override
-  public Uri getStreamSource() {
-    return(getRoot().buildUpon().appendPath("test-largeasset")
+  public Uri getStreamSource(Uri root) {
+    return(root.buildUpon().appendPath("test-largeasset")
                     .appendPath("test.mp4").build());
   }
 }

@@ -25,22 +25,21 @@ import java.io.InputStream;
 
 abstract class AbstractReadOnlyProviderTest extends AndroidTestCase {
   abstract public InputStream getOriginal() throws IOException;
-  abstract public Uri getStreamSource();
-  
-  protected void setUp() throws Exception {
-    super.setUp();
-  }
+  abstract public Uri getStreamSource(Uri root);
 
-  protected void tearDown() throws Exception {
-    super.tearDown();
-  }
+  static final Uri[] ROOTS={
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX)
+  };
 
   public void testRead() throws NotFoundException, IOException {
-    InputStream testInput=
-        getContext().getContentResolver().openInputStream(getStreamSource());
-    InputStream testComparison=getOriginal();
+    for (Uri root : ROOTS) {
+      InputStream testInput=
+        getContext().getContentResolver().openInputStream(
+          getStreamSource(root));
+      InputStream testComparison=getOriginal();
 
-    assertTrue(isEqual(testInput, testComparison));
+      assertTrue(isEqual(testInput, testComparison));
+    }
   }
 
   // from http://stackoverflow.com/a/4245881/115145
@@ -74,9 +73,5 @@ abstract class AbstractReadOnlyProviderTest extends AndroidTestCase {
       i1.close();
       i2.close();
     }
-  }
-
-  protected Uri getRoot() {
-    return(Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX));
   }
 }

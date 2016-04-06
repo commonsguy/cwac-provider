@@ -44,29 +44,33 @@ abstract class AbstractReadWriteProviderTest extends AndroidTestCase {
     doWriteAndRead("test.mp4", "__test_output.mp4");
   }
 
-  public void doWriteAndRead(String original, String out) throws NotFoundException, IOException {
-    Uri output=
-        getRoot().buildUpon().appendPath(getPrefix())
-                 .appendEncodedPath(out).build();
+  public void doWriteAndRead(String original, String out)
+    throws NotFoundException, IOException {
+    for (Uri root : AbstractReadOnlyProviderTest.ROOTS) {
+      Uri output=
+        root.buildUpon().appendPath(getPrefix())
+          .appendEncodedPath(out).build();
 
-    try {
-      OutputStream testOutput=
-          getContext().getContentResolver().openOutputStream(output);
+      try {
+        OutputStream testOutput=
+          getContext().getContentResolver().openOutputStream(
+            output);
 
-      assertNotNull(testOutput);
-      copy(getContext().getResources().getAssets()
-                       .open(original), testOutput);
-      assertFileExists(out);
-      compareStreamToAsset(output, original);
-    }
-    finally {
-      getContext().getContentResolver().delete(output, null, null);
+        assertNotNull(testOutput);
+        copy(getContext().getResources().getAssets()
+          .open(original), testOutput);
+        assertFileExists(out);
+        compareStreamToAsset(output, original);
+      }
+      finally {
+        getContext().getContentResolver().delete(output, null,
+          null);
+      }
     }
   }
 
   public void compareStreamToAsset(Uri stream, String assetName)
-                                                                throws NotFoundException,
-                                                                IOException {
+    throws NotFoundException, IOException {
     InputStream testInput=
         getContext().getContentResolver().openInputStream(stream);
 
@@ -81,7 +85,7 @@ abstract class AbstractReadWriteProviderTest extends AndroidTestCase {
   // from http://stackoverflow.com/a/4245881/115145
 
   static boolean isEqual(InputStream i1, InputStream i2)
-                                                        throws IOException {
+    throws IOException {
     byte[] buf1=new byte[1024];
     byte[] buf2=new byte[1024];
 
@@ -111,10 +115,6 @@ abstract class AbstractReadWriteProviderTest extends AndroidTestCase {
     }
   }
 
-  protected Uri getRoot() {
-    return(Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX));
-  }
-  
   static void copy(InputStream in, OutputStream out) throws IOException {
     byte[] buf=new byte[1024];
     int len;

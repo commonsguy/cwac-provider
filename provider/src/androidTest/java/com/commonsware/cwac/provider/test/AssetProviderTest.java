@@ -26,7 +26,7 @@ public class AssetProviderTest extends
   }
 
   @Override
-  public Uri getStreamSource() {
-    return(getRoot().buildUpon().appendPath("test-asset").build());
+  public Uri getStreamSource(Uri root) {
+    return(root.buildUpon().appendPath("test-asset").build());
   }
 }

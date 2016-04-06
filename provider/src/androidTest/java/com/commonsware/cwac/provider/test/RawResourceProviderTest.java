@@ -26,7 +26,7 @@ public class RawResourceProviderTest extends
   }
 
   @Override
-  public Uri getStreamSource() {
-    return(getRoot().buildUpon().appendPath("test-raw").build());
+  public Uri getStreamSource(Uri root) {
+    return(root.buildUpon().appendPath("test-raw").build());
   }
 }
