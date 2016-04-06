@@ -1,5 +1,5 @@
 /***
-  Copyright (c) 2013 CommonsWare, LLC
+  Copyright (c) 2013-2016 CommonsWare, LLC
   
   Licensed under the Apache License, Version 2.0 (the "License"); you may
   not use this file except in compliance with the License. You may obtain
@@ -65,7 +65,7 @@ public class CompositeStreamStrategy implements StreamStrategy {
 
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
-                                                            throws FileNotFoundException {
+    throws FileNotFoundException {
     StreamStrategy strategy=getStrategy(uri);
 
     if (strategy != null) {
@@ -121,7 +121,7 @@ public class CompositeStreamStrategy implements StreamStrategy {
   }
 
   private StreamStrategy getStrategy(Uri uri)
-                                             throws IllegalArgumentException {
+    throws IllegalArgumentException {
     String path=uri.getPath();
     Map.Entry<String, StreamStrategy> best=null;
 
@@ -135,8 +135,7 @@ public class CompositeStreamStrategy implements StreamStrategy {
     }
 
     if (best == null) {
-      throw new IllegalArgumentException(
-                                         "Unable to find configured strategy for "
+      throw new IllegalArgumentException("Unable to find configured strategy for "
                                              + uri);
     }
 
