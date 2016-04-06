@@ -17,6 +17,7 @@ package com.commonsware.cwac.provider;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,6 +119,17 @@ public class CompositeStreamStrategy implements StreamStrategy {
     }
 
     return(-1);
+  }
+
+  @Override
+  public boolean buildUriForFile(Uri.Builder b, File file) {
+    for (StreamStrategy strategy : strategies.values()) {
+      if (strategy.buildUriForFile(b, file)) {
+        return(true);
+      }
+    }
+
+    return(false);
   }
 
   private StreamStrategy getStrategy(Uri uri)

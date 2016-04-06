@@ -19,6 +19,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.content.res.AssetFileDescriptor;
@@ -30,12 +31,15 @@ import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
+import android.util.Log;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.xmlpull.v1.XmlPullParserException;
 
 public class StreamProvider extends ContentProvider {
@@ -57,18 +61,57 @@ public class StreamProvider extends ContentProvider {
   private static final String ATTR_PATH="path";
   private static final String PREF_URI_PREFIX="uriPrefix";
 
+  private static ConcurrentHashMap<String, SoftReference<StreamProvider>> INSTANCES=
+    new ConcurrentHashMap<String, SoftReference<StreamProvider>>();
   private CompositeStreamStrategy strategy;
   private boolean useLegacyCursorWrapper=false;
   private SharedPreferences prefs;
 
+  private static void putInstance(StreamProvider provider)
+    throws PackageManager.NameNotFoundException {
+    PackageManager pm=provider.getContext().getPackageManager();
+    PackageInfo pkg=
+      pm.getPackageInfo(provider.getContext().getPackageName(),
+        PackageManager.GET_PROVIDERS);
+
+    for (ProviderInfo pi : pkg.providers) {
+      if (provider.getClass().getCanonicalName().equals(pi.name)) {
+        for (String authority : pi.authority.split(";")) {
+          INSTANCES.put(authority,
+            new SoftReference<StreamProvider>(provider));
+        }
+      }
+    }
+  }
+
+  public static Uri getUriForFile(String authority, File file) {
+    SoftReference<StreamProvider> ref=INSTANCES.get(authority);
+    Uri result=null;
+
+    if (ref!=null) {
+      result=ref.get().getUriForFileImpl(authority, file);
+    }
+
+    return(result);
+  }
+
   @Override
   public boolean onCreate() {
-    prefs=
-      getContext()
-        .getSharedPreferences(BuildConfig.APPLICATION_ID,
-          Context.MODE_PRIVATE);
+    try {
+      putInstance(this);
 
-    return(true);
+      prefs=
+        getContext()
+          .getSharedPreferences(BuildConfig.APPLICATION_ID,
+            Context.MODE_PRIVATE);
+
+      return(true);
+    }
+    catch (PackageManager.NameNotFoundException e) {
+      Log.e(getClass().getSimpleName(), "Exception caching self", e);
+    }
+
+    return(false);
   }
 
   @Override
@@ -217,7 +260,7 @@ public class StreamProvider extends ContentProvider {
           }
 
           String path=in.getAttributeValue(null, ATTR_PATH);
-          StreamStrategy strategy=buildStrategy(context, tag, path);
+          StreamStrategy strategy=buildStrategy(context, tag, name, path);
 
           if (strategy != null) {
             result.add(name, strategy);
@@ -250,7 +293,7 @@ public class StreamProvider extends ContentProvider {
   }
 
   protected StreamStrategy buildStrategy(Context context, String tag,
-                                         String path)
+                                         String name, String path)
     throws IOException {
     StreamStrategy result=null;
 
@@ -261,18 +304,24 @@ public class StreamProvider extends ContentProvider {
       return(new AssetStrategy(context, path));
     }
     else {
-      result=buildLocalStrategy(context, tag, path);
+      result=buildLocalStrategy(context, tag, name, path);
     }
 
     return(result);
   }
 
   protected StreamStrategy buildLocalStrategy(Context context,
-                                              String tag, String path)
+                                              String tag, String name,
+                                              String path)
     throws IOException {
     File target=null;
 
     if (TAG_FILES_PATH.equals(tag)) {
+      if (TextUtils.isEmpty(path)) {
+        throw new
+          SecurityException("Cannot serve files from all of getFilesDir()");
+      }
+
       target=buildPath(context.getFilesDir(), path);
     }
     else if (TAG_CACHE_PATH.equals(tag)) {
@@ -289,7 +338,7 @@ public class StreamProvider extends ContentProvider {
     }
 
     if (target != null) {
-      return(new LocalPathStrategy(target));
+      return(new LocalPathStrategy(name, target));
     }
 
     return(null);
@@ -297,6 +346,24 @@ public class StreamProvider extends ContentProvider {
 
   protected CompositeStreamStrategy buildCompositeStrategy() {
     return(new CompositeStreamStrategy());
+  }
+
+  protected Uri getUriForFileImpl(String authority, File file) {
+    Uri.Builder b=new Uri.Builder();
+
+    b.scheme("content").authority(authority);
+
+    String prefix=getUriPrefix();
+
+    if (prefix!=null) {
+      b.appendPath(prefix);
+    }
+
+    if (strategy.buildUriForFile(b, file)) {
+      return(b.build());
+    }
+
+    return(null);
   }
 
   private Uri normalize(Uri input) {

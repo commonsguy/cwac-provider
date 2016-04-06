@@ -17,6 +17,7 @@ package com.commonsware.cwac.provider;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 public interface StreamStrategy {
@@ -37,4 +38,6 @@ public interface StreamStrategy {
 
   AssetFileDescriptor openAssetFile(Uri uri, String mode)
     throws FileNotFoundException;
+
+  boolean buildUriForFile(Uri.Builder b, File file);
 }

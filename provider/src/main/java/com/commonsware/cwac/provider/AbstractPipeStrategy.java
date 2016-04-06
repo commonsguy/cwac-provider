@@ -19,6 +19,7 @@ import android.os.ParcelFileDescriptor;
 import android.os.ParcelFileDescriptor.AutoCloseOutputStream;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,6 +76,11 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
   @Override
   public long getLength(Uri uri) {
     return(-1);
+  }
+
+  @Override
+  public boolean buildUriForFile(Uri.Builder b, File file) {
+    return(false);
   }
 
   static class TransferOutThread extends Thread {

@@ -14,21 +14,45 @@
 
 package com.commonsware.cwac.provider.test;
 
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
+import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
+import org.junit.Before;
 import java.io.File;
 
 public class StandardFilesProviderTest extends AbstractReadWriteProviderTest {
+  @Before
+  public void setUp() {
+    File testDir=
+      new File(InstrumentationRegistry.getContext().getFilesDir(), "foo");
+
+    testDir.mkdirs();
+  }
+
   @Override
   public String getPrefix() {
     return("test-standard");
   }
 
   @Override
-  void assertFileExists(String fileName) {
-    File testFile=
-        new File(InstrumentationRegistry.getContext().getFilesDir(), fileName);
+  void assertFileExists(String filename) {
+    File testDir=
+      new File(InstrumentationRegistry.getContext().getFilesDir(), "foo");
+    File testFile=new File(testDir, filename);
 
     Assert.assertTrue(testFile.exists());
+  }
+
+  @Override
+  void assertUriBuild(String filename, Uri original) {
+    File testDir=
+      new File(InstrumentationRegistry.getContext().getFilesDir(), "foo");
+    File testFile=new File(testDir, filename);
+    Uri test=StreamProvider.getUriForFile(original.getAuthority(),
+      testFile);
+
+    Assert.assertNotNull(test);
+    Assert.assertEquals(original, test);
   }
 }

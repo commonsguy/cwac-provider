@@ -24,10 +24,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class LocalPathStrategy implements StreamStrategy {
-  private File root=null;
+  private final File root;
+  private final String name;
 
-  public LocalPathStrategy(File root) throws IOException {
+  public LocalPathStrategy(String name, File root) throws IOException {
     this.root=root.getCanonicalFile();
+    this.name=name;
   }
 
   @Override
@@ -61,7 +63,7 @@ public class LocalPathStrategy implements StreamStrategy {
 
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
-                                                            throws FileNotFoundException {
+    throws FileNotFoundException {
     final File file=getFileForUri(uri);
     final int fileMode=modeToMode(mode);
     
@@ -87,6 +89,28 @@ public class LocalPathStrategy implements StreamStrategy {
   @Override
   public long getLength(Uri uri) {
     return(getFileForUri(uri).length());
+  }
+
+  @Override
+  public boolean buildUriForFile(Uri.Builder b, File file) {
+    try {
+      String fpath=file.getCanonicalPath();
+      String rpath=root.getCanonicalPath();
+
+      if (fpath.startsWith(rpath)) {
+        b
+          .appendPath(name)
+          .appendPath(fpath.substring(rpath.length() + 1));
+
+        return(true);
+      }
+    }
+    catch (IOException e) {
+      throw new
+        IllegalArgumentException("Invalid file: "+file.toString(), e);
+    }
+
+    return(false);
   }
 
   private File getFileForUri(Uri uri) {

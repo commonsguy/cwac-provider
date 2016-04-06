@@ -14,7 +14,9 @@
 
 package com.commonsware.cwac.provider.test;
 
+import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
+import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
 import java.io.File;
 
@@ -30,5 +32,18 @@ public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
         new File(InstrumentationRegistry.getContext().getExternalFilesDir(null), fileName);
 
     Assert.assertTrue(testFile.exists());
+  }
+
+  @Override
+  void assertUriBuild(String filename, Uri original) {
+    File testFile=
+      new File(InstrumentationRegistry.getContext().getExternalFilesDir(
+        null), filename);
+    Uri test=
+      StreamProvider.getUriForFile(original.getAuthority(),
+        testFile);
+
+    Assert.assertNotNull(test);
+    Assert.assertEquals(original, test);
   }
 }

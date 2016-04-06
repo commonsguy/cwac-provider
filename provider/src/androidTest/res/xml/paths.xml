@@ -10,7 +10,7 @@
 
 	<cache-path name="test-cache"/>
 
-	<files-path name="test-standard"/>
+	<files-path name="test-standard" path="foo"/>
 
 	<raw-resource
 		name="test-raw"

@@ -33,6 +33,7 @@ import java.io.OutputStream;
 abstract class AbstractReadWriteProviderTest {
   abstract public String getPrefix();
   abstract void assertFileExists(String filename);
+  abstract void assertUriBuild(String filename, Uri original);
 
   @Test
   public void testWriteAndRead() throws NotFoundException, IOException {
@@ -65,6 +66,7 @@ abstract class AbstractReadWriteProviderTest {
           .getAssets()
           .open(original), testOutput);
         assertFileExists(out);
+        assertUriBuild(out, output);
         compareStreamToAsset(output, original);
       }
       finally {
