@@ -152,7 +152,7 @@ public class StreamProvider extends ContentProvider {
 
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
-                                                            throws FileNotFoundException {
+    throws FileNotFoundException {
     return(strategy.openFile(uri, mode));
   }
 
@@ -168,9 +168,8 @@ public class StreamProvider extends ContentProvider {
 
   private CompositeStreamStrategy parseStreamStrategy(Context context,
                                                       String authority)
-                                                                       throws IOException,
-                                                                       XmlPullParserException {
-    final CompositeStreamStrategy result=new CompositeStreamStrategy();
+    throws IOException, XmlPullParserException {
+    final CompositeStreamStrategy result=buildCompositeStrategy();
     final ProviderInfo info=
         context.getPackageManager()
                .resolveContentProvider(authority,
@@ -262,6 +261,10 @@ public class StreamProvider extends ContentProvider {
     }
 
     return(null);
+  }
+
+  protected CompositeStreamStrategy buildCompositeStrategy() {
+    return(new CompositeStreamStrategy());
   }
 
   private static File buildPath(File base, String... segments) {
