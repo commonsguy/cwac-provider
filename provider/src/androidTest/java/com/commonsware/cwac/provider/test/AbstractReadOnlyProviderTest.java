@@ -16,14 +16,20 @@ package com.commonsware.cwac.provider.test;
 
 import android.content.res.Resources.NotFoundException;
 import android.net.Uri;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import android.util.Log;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
-abstract class AbstractReadOnlyProviderTest extends AndroidTestCase {
+@RunWith(AndroidJUnit4.class)
+abstract class AbstractReadOnlyProviderTest {
   abstract public InputStream getOriginal() throws IOException;
   abstract public Uri getStreamSource(Uri root);
 
@@ -32,21 +38,25 @@ abstract class AbstractReadOnlyProviderTest extends AndroidTestCase {
     Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no"),
   };
 
+  @Test
   public void testRead() throws NotFoundException, IOException {
     for (Uri root : ROOTS) {
       InputStream testInput=
-        getContext().getContentResolver().openInputStream(
-          getStreamSource(root));
+        InstrumentationRegistry
+          .getContext()
+          .getContentResolver()
+          .openInputStream(
+            getStreamSource(root));
       InputStream testComparison=getOriginal();
 
-      assertTrue(isEqual(testInput, testComparison));
+      Assert.assertTrue(isEqual(testInput, testComparison));
     }
   }
 
   // from http://stackoverflow.com/a/4245881/115145
 
   static boolean isEqual(InputStream i1, InputStream i2)
-                                                        throws IOException {
+    throws IOException {
     byte[] buf1=new byte[1024];
     byte[] buf2=new byte[1024];
 

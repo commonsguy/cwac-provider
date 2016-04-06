@@ -15,14 +15,15 @@
 package com.commonsware.cwac.provider.test;
 
 import android.os.Environment;
+import org.junit.Assert;
+import org.junit.Before;
 import java.io.File;
 
 public class ExternalRootProviderTest extends AbstractReadWriteProviderTest {
   private File testDir=null;
 
-  protected void setUp() throws Exception {
-    super.setUp();
-
+  @Before
+  public void setUp() throws Exception {
     testDir=
         new File(Environment.getExternalStorageDirectory(),
                  "StreamProviderTests");
@@ -41,6 +42,6 @@ public class ExternalRootProviderTest extends AbstractReadWriteProviderTest {
   void assertFileExists(String fileName) {
     File testFile=new File(testDir, fileName);
     
-    assertTrue(testFile.exists());
+    Assert.assertTrue(testFile.exists());
   }
 }

@@ -14,6 +14,8 @@
 
 package com.commonsware.cwac.provider.test;
 
+import android.support.test.InstrumentationRegistry;
+import org.junit.Assert;
 import java.io.File;
 
 public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
@@ -25,8 +27,8 @@ public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
   @Override
   void assertFileExists(String fileName) {
     File testFile=
-        new File(getContext().getExternalFilesDir(null), fileName);
+        new File(InstrumentationRegistry.getContext().getExternalFilesDir(null), fileName);
 
-    assertTrue(testFile.exists());
+    Assert.assertTrue(testFile.exists());
   }
 }

@@ -15,6 +15,7 @@
 package com.commonsware.cwac.provider.test;
 
 import android.net.Uri;
+import android.support.test.InstrumentationRegistry;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,7 +23,7 @@ public class LargeAssetProviderTest extends
     AbstractReadOnlyProviderTest {
   @Override
   public InputStream getOriginal() throws IOException {
-    return(getContext().getAssets().open("test.mp4"));
+    return(InstrumentationRegistry.getContext().getAssets().open("test.mp4"));
   }
 
   @Override

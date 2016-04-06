@@ -16,13 +16,14 @@
 package com.commonsware.cwac.provider.test;
 
 import android.net.Uri;
+import android.support.test.InstrumentationRegistry;
 import java.io.InputStream;
 
 public class RawResourceProviderTest extends
     AbstractReadOnlyProviderTest {
   @Override
   public InputStream getOriginal() {
-    return(getContext().getResources().openRawResource(R.raw.something));
+    return(InstrumentationRegistry.getContext().getResources().openRawResource(R.raw.something));
   }
 
   @Override
