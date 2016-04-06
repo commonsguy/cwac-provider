@@ -28,7 +28,8 @@ abstract class AbstractReadOnlyProviderTest extends AndroidTestCase {
   abstract public Uri getStreamSource(Uri root);
 
   static final Uri[] ROOTS={
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX)
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX),
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no"),
   };
 
   public void testRead() throws NotFoundException, IOException {

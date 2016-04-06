@@ -280,6 +280,12 @@ public class StreamProvider extends ContentProvider {
   }
 
   private Uri normalize(Uri input) {
+    String prefix=getUriPrefix();
+
+    if (prefix==null) {
+      return(input);
+    }
+
     List<String> segments=new ArrayList<String>(input.getPathSegments());
 
     if (getUriPrefix().equals(segments.get(0))) {
