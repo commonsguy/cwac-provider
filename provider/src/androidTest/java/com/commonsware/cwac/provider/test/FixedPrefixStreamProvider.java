@@ -21,7 +21,7 @@ public class FixedPrefixStreamProvider extends StreamProvider {
     "581ea1e3-f054-4bf9-8c97-afc02ec6866d";
 
   @Override
-  protected String getUriPrefix() {
+  protected String buildUriPrefix() {
     return(PREFIX);
   }
 }
