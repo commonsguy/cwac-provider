@@ -20,15 +20,36 @@ import java.util.Arrays;
 import static android.provider.MediaStore.MediaColumns.DATA;
 import static android.provider.MediaStore.MediaColumns.MIME_TYPE;
 
+/**
+ * Wraps the Cursor returned by an ordinary FileProvider,
+ * StreamProvider, or other ContentProvider. If the query()
+ * requests _DATA or MIME_TYPE, adds in some values for
+ * that column, so the client getting this Cursor is less
+ * likely to crash. Of course, clients should not be requesting
+ * either of these columns in the first place...
+ */
 public class LegacyCompatCursorWrapper extends CursorWrapper {
   final int fakeDataColumn;
   final int fakeMimeTypeColumn;
   final private String mimeType;
 
+  /**
+   * Constructor.
+   *
+   * @param cursor the Cursor to be wrapped
+   */
   public LegacyCompatCursorWrapper(Cursor cursor) {
     this(cursor, null);
   }
 
+  /**
+   * Constructor.
+   *
+   * @param cursor the Cursor to be wrapped
+   * @param mimeType the MIME type of the content represented
+   *                 by the Uri that generated this Cursor, should
+   *                 we need it
+   */
   public LegacyCompatCursorWrapper(Cursor cursor, String mimeType) {
     super(cursor);
 
@@ -52,6 +73,9 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     this.mimeType=mimeType;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getColumnCount() {
     int count=super.getColumnCount();
@@ -67,6 +91,9 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     return(count);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getColumnIndex(String columnName) {
     if (!cursorHasDataColumn() && DATA.equalsIgnoreCase(
@@ -82,6 +109,9 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     return(super.getColumnIndex(columnName));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getColumnName(int columnIndex) {
     if (columnIndex==fakeDataColumn) {
@@ -95,6 +125,9 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     return(super.getColumnName(columnIndex));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String[] getColumnNames() {
     if (cursorHasDataColumn() && cursorHasMimeTypeColumn()) {
@@ -115,6 +148,9 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     return(result);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getString(int columnIndex) {
     if (!cursorHasDataColumn() && columnIndex==fakeDataColumn) {
@@ -128,6 +164,9 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     return(super.getString(columnIndex));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int getType(int columnIndex) {
     if (!cursorHasDataColumn() && columnIndex==fakeDataColumn) {
@@ -141,10 +180,17 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
     return(super.getType(columnIndex));
   }
 
+  /**
+   * @return true if the Cursor has a _DATA column, false otherwise
+   */
   private boolean cursorHasDataColumn() {
     return(fakeDataColumn==-1);
   }
 
+  /**
+   * @return true if the Cursor has a MIME_TYPE column, false
+   * otherwise
+   */
   private boolean cursorHasMimeTypeColumn() {
     return(fakeMimeTypeColumn==-1);
   }

@@ -23,15 +23,31 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * Concrete StreamStrategy implementation that handles
+ * files on the local filesystem. Requires that the app actually
+ * be able to read and write those files.
+ */
 public class LocalPathStrategy implements StreamStrategy {
   private final File root;
   private final String name;
 
+  /**
+   * Constructor.
+   *
+   * @param name name of first path segment of Uri values (not
+   *             counting the prefix, if any)
+   * @param root directory or file from which to serve
+   * @throws IOException
+   */
   public LocalPathStrategy(String name, File root) throws IOException {
     this.root=root.getCanonicalFile();
     this.name=name;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getType(Uri uri) {
     final File file=getFileForUri(uri);
@@ -51,16 +67,25 @@ public class LocalPathStrategy implements StreamStrategy {
     return(null);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean canDelete(Uri uri) {
     return(getFileForUri(uri).exists());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Uri uri) {
     getFileForUri(uri).delete();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
     throws FileNotFoundException {
@@ -70,27 +95,42 @@ public class LocalPathStrategy implements StreamStrategy {
     return(ParcelFileDescriptor.open(file, fileMode));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean hasAFD(Uri uri) {
     return(false);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public AssetFileDescriptor openAssetFile(Uri uri, String mode)
     throws FileNotFoundException {
     throw new IllegalStateException("Not supported");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getName(Uri uri) {
     return(getFileForUri(uri).getName());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long getLength(Uri uri) {
     return(getFileForUri(uri).length());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean buildUriForFile(Uri.Builder b, File file) {
     try {
@@ -113,6 +153,11 @@ public class LocalPathStrategy implements StreamStrategy {
     return(false);
   }
 
+  /**
+   * @param uri the Uri for the content
+   * @return a File pointing to where that content should reside,
+   * if the Uri is valid
+   */
   private File getFileForUri(Uri uri) {
     String path=uri.getEncodedPath();
 

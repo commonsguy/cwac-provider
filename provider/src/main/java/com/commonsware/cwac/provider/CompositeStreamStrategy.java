@@ -22,14 +22,28 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Implementation of the composite pattern for a collection
+ * of StreamStrategy instances.
+ */
 public class CompositeStreamStrategy implements StreamStrategy {
   private Map<String, StreamStrategy> strategies=
       new HashMap<String, StreamStrategy>();
 
+  /**
+   * Adds a strategy to be considered.
+   *
+   * @param name unique name of this strategy, forms first segment
+   *             of Uri (after the prefix, if any)
+   * @param strategy the strategy associated with this name
+   */
   void add(String name, StreamStrategy strategy) {
     strategies.put(name, strategy);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getType(Uri uri) {
     String result=null;
@@ -42,6 +56,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(result);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean canDelete(Uri uri) {
     StreamStrategy strategy=getStrategy(uri);
@@ -53,6 +70,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(false);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Uri uri) {
     StreamStrategy strategy=getStrategy(uri);
@@ -64,6 +84,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
     throws FileNotFoundException {
@@ -76,6 +99,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(null);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean hasAFD(Uri uri) {
     StreamStrategy strategy=getStrategy(uri);
@@ -87,6 +113,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(false);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public AssetFileDescriptor openAssetFile(Uri uri, String mode)
     throws FileNotFoundException {
@@ -99,6 +128,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(null);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getName(Uri uri) {
     StreamStrategy strategy=getStrategy(uri);
@@ -110,6 +142,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(null);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long getLength(Uri uri) {
     StreamStrategy strategy=getStrategy(uri);
@@ -121,6 +156,9 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(-1);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean buildUriForFile(Uri.Builder b, File file) {
     for (StreamStrategy strategy : strategies.values()) {
@@ -132,6 +170,14 @@ public class CompositeStreamStrategy implements StreamStrategy {
     return(false);
   }
 
+  /**
+   * Uses the first path segment (after the already-removed prefix,
+   * if any) to find the strategy to use for this Uri.
+   *
+   * @param uri the Uri for the content
+   * @return the StreamStrategy that we think handles this content
+   * @throws IllegalArgumentException
+   */
   private StreamStrategy getStrategy(Uri uri)
     throws IllegalArgumentException {
     String path=uri.getPath();

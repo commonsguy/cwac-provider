@@ -20,10 +20,24 @@ import android.util.Log;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+/**
+ * This is a further refinement of AbstractPipeStrategy,
+ * for use in cases where subclasses can provide an
+ * AssetFileDescriptor on the content
+ * (see AssetStrategy, RawResourceStrategy).
+ */
 abstract class AFDStrategy extends AbstractPipeStrategy {
+  /**
+   * @param uri the Uri of the content
+   * @return an AssetFileDescriptor on that content
+   * @throws IOException
+   */
   abstract AssetFileDescriptor getAssetFileDescriptor(Uri uri)
       throws IOException;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long getLength(Uri uri) {
     AssetFileDescriptor afd;
@@ -41,11 +55,17 @@ abstract class AFDStrategy extends AbstractPipeStrategy {
     return(result);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean hasAFD(Uri uri) {
     return(true);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public AssetFileDescriptor openAssetFile(Uri uri, String mode)
     throws FileNotFoundException {

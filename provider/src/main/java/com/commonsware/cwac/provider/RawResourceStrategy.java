@@ -20,10 +20,21 @@ import android.net.Uri;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Concrete StreamStrategy implementation for mapping Uri
+ * values to raw resources.
+ */
 class RawResourceStrategy extends AFDStrategy {
   private int resourceId=-1;
   private Context appContext=null;
 
+  /**
+   * Constructor
+   *
+   * @param ctxt any Context will do; strategy holds onto
+   *             Application
+   * @param path name of the raw resource to serve up
+   */
   RawResourceStrategy(Context ctxt, String path) {
     resourceId=
         ctxt.getResources().getIdentifier(path, "raw",
@@ -31,11 +42,17 @@ class RawResourceStrategy extends AFDStrategy {
     appContext=ctxt.getApplicationContext();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   InputStream getInputStream(Uri uri) {
     return(appContext.getResources().openRawResource(resourceId));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public AssetFileDescriptor getAssetFileDescriptor(Uri uri)
       throws IOException {

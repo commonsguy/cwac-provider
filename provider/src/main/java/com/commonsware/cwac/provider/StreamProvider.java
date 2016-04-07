@@ -42,6 +42,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.xmlpull.v1.XmlPullParserException;
 
+/**
+ * ContentProvider, based on Google's FileProvider, that can
+ * serve up stream content from a variety of data sources,
+ * described in the form of StreamStrategy objects.
+ */
 public class StreamProvider extends ContentProvider {
   private static final String[] COLUMNS= {
       OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
@@ -67,6 +72,12 @@ public class StreamProvider extends ContentProvider {
   private boolean useLegacyCursorWrapper=false;
   private SharedPreferences prefs;
 
+  /**
+   * Registers a StreamProvider for use with getUriForFile()
+   *
+   * @param provider a StreamProvider instance
+   * @throws PackageManager.NameNotFoundException
+   */
   private static void putInstance(StreamProvider provider)
     throws PackageManager.NameNotFoundException {
     PackageManager pm=provider.getContext().getPackageManager();
@@ -84,6 +95,15 @@ public class StreamProvider extends ContentProvider {
     }
   }
 
+  /**
+   * As with the FileProvider equivalent, attempts to find a Uri
+   * that would serve the associated file
+   *
+   * @param authority the authority string of the provider
+   * @param file the File to be served
+   * @return the Uri pointing to that File, or null if the file
+   * does not seem to be related to the named provider
+   */
   public static Uri getUriForFile(String authority, File file) {
     SoftReference<StreamProvider> ref=INSTANCES.get(authority);
     Uri result=null;
@@ -95,6 +115,9 @@ public class StreamProvider extends ContentProvider {
     return(result);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean onCreate() {
     try {
@@ -114,6 +137,9 @@ public class StreamProvider extends ContentProvider {
     return(false);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void attachInfo(Context context, ProviderInfo info) {
     super.attachInfo(context, info);
@@ -129,6 +155,13 @@ public class StreamProvider extends ContentProvider {
     }
   }
 
+  /**
+   * Confirm that our security settings are apropos. In this case,
+   * we do not support being exported and we do require that
+   * grantUriPermissions be declared.
+   *
+   * @param info
+   */
   protected void checkSecurity(ProviderInfo info) {
     // Sanity check our security
     if (info.exported) {
@@ -140,6 +173,9 @@ public class StreamProvider extends ContentProvider {
     }
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Cursor query(Uri uri, String[] projection, String selection,
                       String[] selectionArgs, String sortOrder) {
@@ -178,6 +214,9 @@ public class StreamProvider extends ContentProvider {
     return(new LegacyCompatCursorWrapper(cursor, getType(uri)));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getType(Uri uri) {
     String result=strategy.getType(normalize(uri));
@@ -185,17 +224,26 @@ public class StreamProvider extends ContentProvider {
     return(result == null ? "application/octet-stream" : result);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public Uri insert(Uri uri, ContentValues values) {
     throw new UnsupportedOperationException("No external inserts");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int update(Uri uri, ContentValues values, String selection,
                     String[] selectionArgs) {
     throw new UnsupportedOperationException("No external updates");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public int delete(Uri uri, String selection, String[] selectionArgs) {
     uri=normalize(uri);
@@ -208,12 +256,18 @@ public class StreamProvider extends ContentProvider {
     return(0);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
     throws FileNotFoundException {
     return(strategy.openFile(normalize(uri), mode));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public AssetFileDescriptor openAssetFile(Uri uri, String mode)
     throws FileNotFoundException {
@@ -277,6 +331,12 @@ public class StreamProvider extends ContentProvider {
     return(result);
   }
 
+  /**
+   * @return the prefix to use on Uri values from this provider,
+   * to help prevent "Surreptitious Sharing" attacks, or null if
+   * there should be no such prefix (default behavior: generated
+   * UUID for this installed provider)
+   */
   protected String getUriPrefix() {
     String prefix=prefs.getString(PREF_URI_PREFIX, null);
 
@@ -288,6 +348,10 @@ public class StreamProvider extends ContentProvider {
     return(prefix);
   }
 
+  /**
+   * @return the prefix to be used by getUriPrefix() for this
+   * app installation, or null if there should be no such prefix
+   */
   protected String buildUriPrefix() {
     return(UUID.randomUUID().toString());
   }
@@ -310,7 +374,7 @@ public class StreamProvider extends ContentProvider {
     return(result);
   }
 
-  protected StreamStrategy buildLocalStrategy(Context context,
+  private StreamStrategy buildLocalStrategy(Context context,
                                               String tag, String name,
                                               String path)
     throws IOException {
@@ -344,11 +408,16 @@ public class StreamProvider extends ContentProvider {
     return(null);
   }
 
+  /**
+   * @return an instance of CompositeStreamStrategy, or some
+   * subclass -- override this if you want custom behavior
+   * at resolution time
+   */
   protected CompositeStreamStrategy buildCompositeStrategy() {
     return(new CompositeStreamStrategy());
   }
 
-  protected Uri getUriForFileImpl(String authority, File file) {
+  private Uri getUriForFileImpl(String authority, File file) {
     Uri.Builder b=new Uri.Builder();
 
     b.scheme("content").authority(authority);

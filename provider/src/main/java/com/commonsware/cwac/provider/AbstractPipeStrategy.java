@@ -25,27 +25,52 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * StreamStrategy (partial) implementation that is designed for
+ * use by things that need a pipe to transfer over the content.
+ *
+ * The current implementation is limited to read-only content
+ * (assets, raw resources, etc.). It could be augmented to support
+ * read-write content if/when needed.
+ */
 public abstract class AbstractPipeStrategy implements StreamStrategy {
+  /**
+   * @param uri the Uri of the content
+   * @return an InputStream on that content
+   * @throws IOException
+   */
   abstract InputStream getInputStream(Uri uri) throws IOException;
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getType(Uri uri) {
     return(MimeTypeMap.getSingleton().getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(uri.toString())));
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean canDelete(Uri uri) {
     return(false);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public void delete(Uri uri) {
     throw new UnsupportedOperationException("Cannot delete a stream");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
-                                                            throws FileNotFoundException {
+    throws FileNotFoundException {
     if ("r".equals(mode)) {
       ParcelFileDescriptor[] pipe=null;
 
@@ -68,21 +93,35 @@ public abstract class AbstractPipeStrategy implements StreamStrategy {
     throw new IllegalArgumentException("Cannot support writing!");
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public String getName(Uri uri) {
     return(uri.getLastPathSegment());
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public long getLength(Uri uri) {
     return(-1);
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean buildUriForFile(Uri.Builder b, File file) {
     return(false);
   }
 
+  /**
+   * Thread used to copy the InputStream contents from
+   * getInputStream() to an OutputStream on the pipe, to transfer
+   * that data to the client of this provider.
+   */
   static class TransferOutThread extends Thread {
     InputStream in;
     OutputStream out;
