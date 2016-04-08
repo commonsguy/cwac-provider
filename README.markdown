@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.3.+'
+    compile 'com.commonsware.cwac:provider:0.4.0'
 }
 ```
 
@@ -155,18 +155,62 @@ aaptOptions {
 (here, the file extensions are from the demo app &mdash; you would
 list the file extensions that you are looking to share)
 
+### Getting Uri Values
+
+For files served through `StreamProvider` (as opposed to assets
+or raw resources), `StreamProvider` offers a static `getUriForFile()`
+method that works akin to its equivalent on `FileProvider`.
+It takes two parameters:
+
+- The authority name of the provider you are interested in
+
+- The `File` object that you want to serve
+
+It returns a `Uri` pointing to that file or `null` if the `File`
+does not seem to be served by that provider.
+
+### Uri Prefixes
+
+To help defeat some security attacks, `StreamProvider`,
+starting with 0.4.0, by
+default, puts a per-install UUID into every `Uri`, as the first
+path segment after the authority name. So, for example, in the
+following `Uri`, `some-prefix` is the prefix:
+
+    content://com.commonsware.hithere/some-prefix/foo/bar.txt
+
+If you are constructing a `Uri` supported by a `StreamProvider`
+&mdash; and you cannot use `getUriForFile()` (e.g., you are serving
+assets or raw resources) &mdash; call the static `getUriPrefix()`
+method, passing in the authority name of the provider. If it
+returns a non-`null` value, that is the prefix to put into the
+`Uri`. If `getUriPrefix()` returns `null`, there is no prefix.
+
+### Extending StreamProvider
+
+You are welcome to create custom subclasses of `StreamProvider`,
+to handle cases that are not covered by `StreamProvider` itself.
+This process is covered
+[in a separate documentation page](https://github.com/commonsguy/cwac-provider/blob/master/docs/EXTENDING.markdown).
+
 ### Limitations
 
 Compared to `FileProvider`, `StreamProvider` has the following limitations:
 
-- You can only use one authority in the `android:authorities` attribute, not
-a semi-colon delimited list
-
-- There is no `getUriForFile()` utility method, as not everything served by
-`StreamProvider` is a `File`
-
 - `FileProvider` has support for an additional, undocumented metadata element;
-`StreamProvider` drops support for that element
+`StreamProvider` drops support for that element.
+
+- `StreamProvider` no longer allows you to serve everything
+from `getFilesDir()`, for security reasons. The `path` attribute
+is required.
+
+### Upgrading to 0.4.0+ From Earlier Versions
+
+If you are upgrading an existing `StreamProvider` implementation
+to 0.4.0 or higher, please note the new `Uri` prefix discussed
+earlier in the documentation. Your provider's `Uri` values will
+have this prefix by default, and you need to include the
+prefix in any `Uri` values that you publish.
 
 Usage: LegacyCompatCursorWrapper
 -----
@@ -197,7 +241,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.3.1 of this module, meaning it is pretty new.
+This is version v0.4.0 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -237,6 +281,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.4.0: added Uri prefix, clearer subclassing support, refactored into Android Studio project structure, etc.
 - v0.3.1: fixed local path bug, added support for `MediaStore.MediaColumns.MIME_TYPE` to `LegacyCompatCursorWrapper`
 - v0.3.0: switched to `openAssetFile()` where possible for better compatibility
 - v0.2.5: pulled out permissions check into separate method
