@@ -80,6 +80,16 @@ public interface StreamStrategy {
   long getLength(Uri uri);
 
   /**
+   * This method is to get a "native" AssetFileDescriptor on
+   * the content identified by the Uri, for stream sources where
+   * the Android SDK provides direct access to get an
+   * AssetFileDescriptor. If all you can get is a
+   * ParcelFileDescriptor, do not wrap that in an AssetFileDescriptor
+   * yourself; we will let Android handle that. But, if whatever
+   * you are using to get the stream gives you an option of
+   * getting an AssetFileDescriptor, then return true here and
+   * return the AssetFileDescriptor from openAssetFile().
+   *
    * @param uri the Uri of the content
    * @return true if you are in position to return an
    * AssetFileDescriptor on the content, false otherwise
