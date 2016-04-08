@@ -16,70 +16,88 @@ package com.commonsware.cwac.provider.test;
 
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.OpenableColumns;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
 import android.util.Log;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 @RunWith(AndroidJUnit4.class)
-abstract class AbstractReadOnlyProviderTest {
+public class DatabaseProviderTest {
   private static final String[] COLUMNS= {
     OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
-  abstract public InputStream getOriginal() throws IOException;
-  abstract public Uri getStreamSource(Uri root);
 
-  static final Uri[] ROOTS={
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX),
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no"),
-  };
+  static final Uri ROOT=
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".db");
 
   @Test
   public void testRead() throws NotFoundException, IOException {
-    for (Uri root : ROOTS) {
-      Uri source=getStreamSource(root);
+    File dbpath=getDatabasePath();
 
-      InputStream testInput=
-        InstrumentationRegistry
-          .getContext()
-          .getContentResolver()
-          .openInputStream(source);
-      InputStream testComparison=getOriginal();
+    dbpath.getParentFile().mkdirs();
 
-      Assert.assertTrue(isEqual(testInput, testComparison));
+    SQLiteDatabase db=
+      SQLiteDatabase.openOrCreateDatabase(dbpath, null);
 
-      Cursor c=InstrumentationRegistry
+    db.close();
+
+    Uri source=getStreamSource(ROOT);
+
+    InputStream testInput=
+      InstrumentationRegistry
         .getContext()
         .getContentResolver()
-        .query(source, COLUMNS, null, null, null);
+        .openInputStream(source);
+    InputStream testComparison=getOriginal();
 
-      Assert.assertNotNull(c);
-      Assert.assertEquals(4, c.getColumnCount());
-      Assert.assertEquals(1, c.getCount());
+    Assert.assertTrue(isEqual(testInput, testComparison));
 
-      c.moveToFirst();
+    Cursor c=InstrumentationRegistry
+      .getContext()
+      .getContentResolver()
+      .query(source, COLUMNS, null, null, null);
 
-      int nameCol=c.getColumnIndex(COLUMNS[0]);
-      int sizeCol=c.getColumnIndex(COLUMNS[1]);
+    Assert.assertNotNull(c);
+    Assert.assertEquals(4, c.getColumnCount());
+    Assert.assertEquals(1, c.getCount());
 
-      if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB) {
-        Assert.assertTrue(
-          c.getType(nameCol)==Cursor.FIELD_TYPE_STRING);
-        Assert.assertNotNull(c.getString(nameCol));
-        Assert.assertTrue(
-          c.getType(sizeCol)==Cursor.FIELD_TYPE_INTEGER);
-        Assert.assertTrue(c.getInt(sizeCol)>0);
-      }
+    c.moveToFirst();
+
+    int nameCol=c.getColumnIndex(COLUMNS[0]);
+    int sizeCol=c.getColumnIndex(COLUMNS[1]);
+
+    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB) {
+      Assert.assertTrue(
+        c.getType(nameCol)==Cursor.FIELD_TYPE_STRING);
+      Assert.assertNotNull(c.getString(nameCol));
+      Assert.assertTrue(
+        c.getType(sizeCol)==Cursor.FIELD_TYPE_INTEGER);
+      Assert.assertTrue(c.getInt(sizeCol)>0);
     }
+  }
+
+  private Uri getStreamSource(Uri root) {
+    return(root.buildUpon().appendPath("test-db").build());
+  }
+
+  private InputStream getOriginal() throws FileNotFoundException {
+    return(new FileInputStream(getDatabasePath()));
+  }
+
+  private File getDatabasePath() {
+    return(InstrumentationRegistry.getContext().getDatabasePath("test.db"));
   }
 
   // from http://stackoverflow.com/a/4245881/115145

@@ -1,0 +1,7 @@
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<database-path
+		name="test-db"
+		path="test.db"/>
+
+</paths>
