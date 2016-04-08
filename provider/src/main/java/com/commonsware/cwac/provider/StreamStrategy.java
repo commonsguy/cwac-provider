@@ -14,6 +14,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.ContentValues;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -38,6 +39,40 @@ public interface StreamStrategy {
    * know the MIME type
    */
   String getType(Uri uri);
+
+  /**
+   * @param uri the Uri of the content
+   * @return true if content at this Uri can be inserted, false otherwise
+   */
+  boolean canInsert(Uri uri);
+
+  /**
+   * Called to insert a piece of content. Will only be called
+   * if you returned true from canInsert() for the same Uri.
+   *
+   * @param uri the Uri of the content
+   * @return a new Uri representing the new content
+   */
+  Uri insert(Uri uri, ContentValues values);
+
+  /**
+   * @param uri the Uri of the content
+   * @return true if this content can be updated, false otherwise
+   */
+  boolean canUpdate(Uri uri);
+
+  /**
+   * Called to update a piece of content. Will only be called
+   * if you returned true from canUpdate() for the same Uri.
+   *
+   * @param uri the Uri of the content
+   * @param values
+   * @param selection
+   * @param selectionArgs
+   * @return
+   */
+  int update(Uri uri, ContentValues values, String selection,
+             String[] selectionArgs);
 
   /**
    * @param uri the Uri of the content

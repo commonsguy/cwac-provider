@@ -14,6 +14,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.ContentValues;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -54,6 +55,67 @@ public class CompositeStreamStrategy implements StreamStrategy {
     }
 
     return(result);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean canInsert(Uri uri) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.canInsert(uri));
+    }
+
+    return(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Uri insert(Uri uri, ContentValues values) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      if (strategy.canDelete(uri)) {
+        return(strategy.insert(uri, values));
+      }
+    }
+
+    throw new UnsupportedOperationException("Um, this should not have been called");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean canUpdate(Uri uri) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      return(strategy.canUpdate(uri));
+    }
+
+    return(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int update(Uri uri, ContentValues values,
+                    String selection, String[] selectionArgs) {
+    StreamStrategy strategy=getStrategy(uri);
+
+    if (strategy != null) {
+      if (strategy.canDelete(uri)) {
+        return(strategy.update(uri, values, selection, selectionArgs));
+      }
+    }
+
+    throw new UnsupportedOperationException("Um, this should not have been called");
   }
 
   /**

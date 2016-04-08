@@ -180,7 +180,7 @@ public class StreamProvider extends ContentProvider {
   @Override
   public Cursor query(Uri uri, String[] projection, String selection,
                       String[] selectionArgs, String sortOrder) {
-    uri=normalize(uri);
+    Uri normalized=normalize(uri);
 
     if (projection == null) {
       projection=COLUMNS;
@@ -191,13 +191,11 @@ public class StreamProvider extends ContentProvider {
     int i=0;
 
     for (String col : projection) {
-      if (OpenableColumns.DISPLAY_NAME.equals(col)) {
-        cols[i]=OpenableColumns.DISPLAY_NAME;
-        values[i++]=strategy.getName(uri);
-      }
-      else if (OpenableColumns.SIZE.equals(col)) {
-        cols[i]=OpenableColumns.SIZE;
-        values[i++]=strategy.getLength(uri);
+      Object value=getValueForQueryColumn(normalized, col);
+
+      if (value!=null) {
+        cols[i]=col;
+        values[i++]=value;
       }
     }
 
@@ -215,6 +213,19 @@ public class StreamProvider extends ContentProvider {
     return(new LegacyCompatCursorWrapper(cursor, getType(uri)));
   }
 
+  protected Object getValueForQueryColumn(Uri uri, String col) {
+    Object result=null;
+
+    if (OpenableColumns.DISPLAY_NAME.equals(col)) {
+      result=strategy.getName(uri);
+    }
+    else if (OpenableColumns.SIZE.equals(col)) {
+      result=strategy.getLength(uri);
+    }
+
+    return(result);
+  }
+
   /**
    * {@inheritDoc}
    */
@@ -230,6 +241,12 @@ public class StreamProvider extends ContentProvider {
    */
   @Override
   public Uri insert(Uri uri, ContentValues values) {
+    uri=normalize(uri);
+
+    if (strategy.canInsert(uri)) {
+      return(strategy.insert(uri, values));
+    }
+
     throw new UnsupportedOperationException("No external inserts");
   }
 
@@ -239,6 +256,12 @@ public class StreamProvider extends ContentProvider {
   @Override
   public int update(Uri uri, ContentValues values, String selection,
                     String[] selectionArgs) {
+    uri=normalize(uri);
+
+    if (strategy.canUpdate(uri)) {
+      return(strategy.update(uri, values, selection, selectionArgs));
+    }
+
     throw new UnsupportedOperationException("No external updates");
   }
 
