@@ -30,11 +30,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import com.commonsware.cwac.provider.StreamProvider;
 
 public class MainActivity extends Activity
   implements AdapterView.OnItemSelectedListener {
+  private static final String AUTHORITY=
+    "com.commonsware.cwac.provider.demo";
   private static final Uri PROVIDER=
-      Uri.parse("content://com.commonsware.cwac.provider.demo");
+      Uri.parse("content://"+AUTHORITY);
   private static final String[] ASSET_PATHS={
     "assets/help.pdf",
     "assets/test.pdf",
@@ -114,7 +117,11 @@ public class MainActivity extends Activity
   private Uri getUri() {
     String path=ASSET_PATHS[assetSpinner.getSelectedItemPosition()];
 
-    return(PROVIDER.buildUpon().path(path).build());
+    return(PROVIDER
+      .buildUpon()
+      .appendPath(StreamProvider.getUriPrefix(AUTHORITY))
+      .appendPath(path)
+      .build());
   }
 
   private void populateCursorTable() {
