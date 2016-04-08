@@ -37,6 +37,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -314,7 +315,14 @@ public class StreamProvider extends ContentProvider {
           }
 
           String path=in.getAttributeValue(null, ATTR_PATH);
-          StreamStrategy strategy=buildStrategy(context, tag, name, path);
+          HashMap<String, String> attrs=new HashMap<String, String>();
+
+          for (int i=0;i<in.getAttributeCount();i++) {
+            attrs.put(in.getAttributeName(i), in.getAttributeValue(i));
+          }
+
+          StreamStrategy strategy=
+            buildStrategy(context, tag, name, path, attrs);
 
           if (strategy != null) {
             result.add(name, strategy);
@@ -356,10 +364,25 @@ public class StreamProvider extends ContentProvider {
     return(UUID.randomUUID().toString());
   }
 
+  /**
+   * Given information about a tag in the XML metadata, build
+   * a configured StreamStrategy to handle it. Subclasses can
+   * override this, handle their own tags, and chain to the
+   * superclass for unrecognized tags.
+   *
+   * @param context a Context, because you might need one
+   * @param tag the tag name of the child element of <paths>
+   * @param name the value of the name attribute
+   * @param path the value of the path attribute, if any
+   * @param attrs all attributes
+   * @return a StreamStrategy capable of handling this configuration
+   * @throws IOException
+   */
   protected StreamStrategy buildStrategy(Context context, String tag,
-                                         String name, String path)
+                                         String name, String path,
+                                         HashMap<String, String> attrs)
     throws IOException {
-    StreamStrategy result=null;
+    StreamStrategy result;
 
     if (TAG_RAW.equals(tag)) {
       return(new RawResourceStrategy(context, path));
