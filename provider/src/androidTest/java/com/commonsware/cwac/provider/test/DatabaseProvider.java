@@ -23,10 +23,6 @@ import java.util.HashMap;
 
 public class DatabaseProvider extends StreamProvider {
   private static final String TAG="database-path";
-  @Override
-  protected String getUriPrefix() {
-    return(null);
-  }
 
   @Override
   protected StreamStrategy buildStrategy(Context context,

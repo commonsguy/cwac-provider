@@ -117,6 +117,26 @@ public class StreamProvider extends ContentProvider {
   }
 
   /**
+   * Returns the Uri prefix used by this StreamProvider, identified
+   * by its authority. This prefix goes after the authority and
+   * before the rest of the path.
+   *
+   * @param authority the authority string of the provider
+   * @return the Uri prefix, or null if there is no prefix
+   */
+  public static String getUriPrefix(String authority) {
+    SoftReference<StreamProvider> ref=INSTANCES.get(authority);
+    String result=null;
+
+    if (ref!=null) {
+      result=ref.get().getUriPrefix();
+    }
+
+    return(result);
+  }
+
+
+  /**
    * {@inheritDoc}
    */
   @Override
@@ -213,6 +233,16 @@ public class StreamProvider extends ContentProvider {
     return(new LegacyCompatCursorWrapper(cursor, getType(uri)));
   }
 
+  /**
+   * Called to get the value to return for a given requested
+   * column in a query() call. If it is not some column that
+   * you are handling, please chain to the superclass implementation,
+   * so StreamProvider can handle the standard ones.
+   *
+   * @param uri the Uri to the content
+   * @param col the name of the column requested in the query()
+   * @return the value to return (typically a String, int, or long)
+   */
   protected Object getValueForQueryColumn(Uri uri, String col) {
     Object result=null;
 

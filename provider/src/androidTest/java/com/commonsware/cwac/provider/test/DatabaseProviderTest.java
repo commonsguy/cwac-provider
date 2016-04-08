@@ -23,6 +23,7 @@ import android.provider.OpenableColumns;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
+import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +40,11 @@ public class DatabaseProviderTest {
   private static final String[] COLUMNS= {
     OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
 
+  static final String RESPECT_MAH_AUTHORITAY=
+    BuildConfig.APPLICATION_ID+".db";
   static final Uri ROOT=
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".db");
+    Uri.parse("content://"+RESPECT_MAH_AUTHORITAY+"/"+
+      StreamProvider.getUriPrefix(RESPECT_MAH_AUTHORITAY));
 
   @Test
   public void testRead() throws NotFoundException, IOException {

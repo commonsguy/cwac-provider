@@ -23,6 +23,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import android.util.Log;
+import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,8 +40,11 @@ abstract class AbstractReadOnlyProviderTest {
   abstract public Uri getStreamSource(Uri root);
 
   static final Uri[] ROOTS={
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+FixedPrefixStreamProvider.PREFIX),
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no"),
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".fixed/"+
+        StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".fixed")),
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".plain/"+
+        StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".plain")),
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no")
   };
 
   @Test
