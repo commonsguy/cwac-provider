@@ -208,7 +208,8 @@ is required.
 
 If you are upgrading an existing `StreamProvider` implementation
 to 0.4.0 or higher, please note the new `Uri` prefix discussed
-earlier in the documentation. Your provider's `Uri` values will
+[earlier in the documentation](https://github.com/commonsguy/cwac-provider#uri-prefixes).
+Your provider's `Uri` values will
 have this prefix by default, and you need to include the
 prefix in any `Uri` values that you publish.
 
