@@ -15,6 +15,7 @@
 
 package com.commonsware.cwac.provider;
 
+import android.content.ContentValues;
 import android.content.res.AssetFileDescriptor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
@@ -65,6 +66,39 @@ public class LocalPathStrategy implements StreamStrategy {
     }
 
     return(null);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean canInsert(Uri uri) {
+    return(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public Uri insert(Uri uri, ContentValues values) {
+    throw new UnsupportedOperationException("Um, this should not have been called");
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean canUpdate(Uri uri) {
+    return(false);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public int update(Uri uri, ContentValues values,
+                    String selection, String[] selectionArgs) {
+    throw new UnsupportedOperationException("Um, this should not have been called");
   }
 
   /**
@@ -171,7 +205,14 @@ public class LocalPathStrategy implements StreamStrategy {
                                              + uri);
     }
 
-    File file=new File(root, path);
+    File file;
+
+    if (root.isDirectory()) {
+      file=new File(root, path);
+    }
+    else {
+      file=root;
+    }
 
     try {
       file=file.getCanonicalFile();
