@@ -242,7 +242,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.4.0 of this module, meaning it is pretty new.
+This is version v0.4.1 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -282,6 +282,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.4.1: fix for [`CompositeStreamStrategy` bug](https://github.com/commonsguy/cwac-provider/issues/12)
 - v0.4.0: added Uri prefix, clearer subclassing support, refactored into Android Studio project structure, etc.
 - v0.3.1: fixed local path bug, added support for `MediaStore.MediaColumns.MIME_TYPE` to `LegacyCompatCursorWrapper`
 - v0.3.0: switched to `openAssetFile()` where possible for better compatibility
