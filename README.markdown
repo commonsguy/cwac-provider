@@ -249,6 +249,12 @@ Demo
 In the `demo/` sub-project you will find a sample project demonstrating the use
 of `StreamProvider`.
 
+Additional Documentation
+------------------------
+[The Busy Coder's Guide to Android Development](https://commonsware.com/Android)
+contains a section dedicated to `StreamProvider`. It also uses
+`LegacyCompatCursorWrapper` in all of its `FileProvider` samples.
+
 License
 -------
 The code in this project is licensed under the Apache
