@@ -169,6 +169,23 @@ It takes two parameters:
 It returns a `Uri` pointing to that file or `null` if the `File`
 does not seem to be served by that provider.
 
+For anything else, you have to assemble the `Uri` yourself:
+
+```java
+private static final String AUTHORITY=
+    "com.commonsware.cwac.provider.demo";
+private static final Uri PROVIDER=
+      Uri.parse("content://"+AUTHORITY);
+
+private Uri buildUri(String path) {
+    return(PROVIDER
+          .buildUpon()
+          .appendPath(StreamProvider.getUriPrefix(AUTHORITY))
+          .appendPath(path)
+          .build());
+}
+```
+
 ### Uri Prefixes
 
 To help defeat some security attacks, `StreamProvider`,
