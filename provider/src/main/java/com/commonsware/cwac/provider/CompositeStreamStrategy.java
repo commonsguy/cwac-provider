@@ -240,7 +240,7 @@ public class CompositeStreamStrategy implements StreamStrategy {
    * @return the StreamStrategy that we think handles this content
    * @throws IllegalArgumentException
    */
-  private StreamStrategy getStrategy(Uri uri)
+  public StreamStrategy getStrategy(Uri uri)
     throws IllegalArgumentException {
     String path=uri.getPath();
     Map.Entry<String, StreamStrategy> best=null;

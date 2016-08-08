@@ -493,6 +493,15 @@ public class StreamProvider extends ContentProvider {
     return(new CompositeStreamStrategy());
   }
 
+  /**
+   * @return the CompositeStreamStrategy created by buildStrategy(),
+   * which will be used for handling all incoming Uri requests and
+   * operations
+   */
+  protected CompositeStreamStrategy getRootStrategy() {
+    return(strategy);
+  }
+
   private Uri getUriForFileImpl(String authority, File file) {
     Uri.Builder b=new Uri.Builder();
 
@@ -532,7 +541,7 @@ public class StreamProvider extends ContentProvider {
     throw new IllegalArgumentException("Unrecognized Uri: "+input.toString());
   }
 
-  private static File buildPath(File base, String... segments) {
+  public static File buildPath(File base, String... segments) {
     File cur=base;
 
     for (String segment : segments) {
