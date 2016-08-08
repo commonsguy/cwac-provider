@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.4.0'
+    compile 'com.commonsware.cwac:provider:0.4.2'
 }
 ```
 
@@ -259,7 +259,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.4.1 of this module, meaning it is pretty new.
+This is version v0.4.2 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -281,7 +281,7 @@ file.
 Questions
 ---------
 If you have questions regarding the use of this code, please post a question
-on [StackOverflow](http://stackoverflow.com/questions/ask) tagged with
+on [Stack Overflow](http://stackoverflow.com/questions/ask) tagged with
 `commonsware-cwac` and `android` after [searching to see if there already is an answer](https://stackoverflow.com/search?q=[commonsware-cwac]+streamprovider). Be sure to indicate
 what CWAC module you are having issues with, and be sure to include source code 
 and stack traces if you are encountering crashes.
@@ -305,6 +305,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.4.2: exposed [a few more methods for extending `StreamProvider`](https://github.com/commonsguy/cwac-provider/issues/15#issuecomment-238405362) 
 - v0.4.1: fix for [`CompositeStreamStrategy` bug](https://github.com/commonsguy/cwac-provider/issues/12)
 - v0.4.0: added Uri prefix, clearer subclassing support, refactored into Android Studio project structure, etc.
 - v0.3.1: fixed local path bug, added support for `MediaStore.MediaColumns.MIME_TYPE` to `LegacyCompatCursorWrapper`
