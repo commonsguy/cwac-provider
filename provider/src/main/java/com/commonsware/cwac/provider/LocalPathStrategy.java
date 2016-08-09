@@ -192,7 +192,7 @@ public class LocalPathStrategy implements StreamStrategy {
    * @return a File pointing to where that content should reside,
    * if the Uri is valid
    */
-  private File getFileForUri(Uri uri) {
+  protected File getFileForUri(Uri uri) {
     String path=uri.getEncodedPath();
 
     final int splitIndex=path.indexOf('/', 1);

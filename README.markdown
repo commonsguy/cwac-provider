@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.4.2'
+    compile 'com.commonsware.cwac:provider:0.4.3'
 }
 ```
 
@@ -259,7 +259,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.4.2 of this module, meaning it is pretty new.
+This is version v0.4.3 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -305,6 +305,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.4.3: exposed [yet another method for extending `StreamProvider`](https://github.com/commonsguy/cwac-provider/issues/15#issuecomment-238407330) 
 - v0.4.2: exposed [a few more methods for extending `StreamProvider`](https://github.com/commonsguy/cwac-provider/issues/15#issuecomment-238405362) 
 - v0.4.1: fix for [`CompositeStreamStrategy` bug](https://github.com/commonsguy/cwac-provider/issues/12)
 - v0.4.0: added Uri prefix, clearer subclassing support, refactored into Android Studio project structure, etc.
