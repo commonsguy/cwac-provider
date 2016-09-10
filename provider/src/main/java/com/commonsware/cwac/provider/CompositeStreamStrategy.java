@@ -79,7 +79,7 @@ public class CompositeStreamStrategy implements StreamStrategy {
     StreamStrategy strategy=getStrategy(uri);
 
     if (strategy != null) {
-      if (strategy.canDelete(uri)) {
+      if (strategy.canInsert(uri)) {
         return(strategy.insert(uri, values));
       }
     }
