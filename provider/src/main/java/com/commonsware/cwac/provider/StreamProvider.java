@@ -55,6 +55,8 @@ public class StreamProvider extends ContentProvider {
       "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
   private static final String META_DATA_USE_LEGACY_CURSOR_WRAPPER=
       "com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER";
+  private static final String META_DATA_USE_URI_FOR_DATA_COLUMN=
+    "com.commonsware.cwac.provider.USE_URI_FOR_DATA_COLUMN";
   private static final String TAG_FILES_PATH="files-path";
   private static final String TAG_CACHE_PATH="cache-path";
   private static final String TAG_EXTERNAL="external-path";
@@ -71,6 +73,7 @@ public class StreamProvider extends ContentProvider {
     new ConcurrentHashMap<String, SoftReference<StreamProvider>>();
   private CompositeStreamStrategy strategy;
   private boolean useLegacyCursorWrapper=false;
+  private boolean useUriForDataColumn=false;
   private SharedPreferences prefs;
 
   /**
@@ -230,7 +233,8 @@ public class StreamProvider extends ContentProvider {
       return(cursor);
     }
 
-    return(new LegacyCompatCursorWrapper(cursor, getType(uri)));
+    return(new LegacyCompatCursorWrapper(cursor, getType(uri),
+      useUriForDataColumn ? uri : null));
   }
 
   /**
@@ -344,6 +348,7 @@ public class StreamProvider extends ContentProvider {
                                        PackageManager.GET_META_DATA);
 
     useLegacyCursorWrapper=info.metaData.getBoolean(META_DATA_USE_LEGACY_CURSOR_WRAPPER, true);
+    useUriForDataColumn=info.metaData.getBoolean(META_DATA_USE_URI_FOR_DATA_COLUMN, false);
 
     final XmlResourceParser in=
         info.loadXmlMetaData(context.getPackageManager(),

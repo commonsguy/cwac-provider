@@ -38,6 +38,9 @@
       <meta-data
         android:name="com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER"
         android:value="true"/>
+      <meta-data
+        android:name="com.commonsware.cwac.provider.USE_URI_FOR_DATA_COLUMN"
+        android:value="true"/>
     </provider>
   </application>
 
