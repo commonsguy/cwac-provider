@@ -16,6 +16,7 @@ package com.commonsware.cwac.provider;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
+import android.net.Uri;
 import java.util.Arrays;
 import static android.provider.MediaStore.MediaColumns.DATA;
 import static android.provider.MediaStore.MediaColumns.MIME_TYPE;
@@ -29,9 +30,10 @@ import static android.provider.MediaStore.MediaColumns.MIME_TYPE;
  * either of these columns in the first place...
  */
 public class LegacyCompatCursorWrapper extends CursorWrapper {
-  final int fakeDataColumn;
-  final int fakeMimeTypeColumn;
+  final private int fakeDataColumn;
+  final private int fakeMimeTypeColumn;
   final private String mimeType;
+  final private Uri uriForDataColumn;
 
   /**
    * Constructor.
@@ -51,7 +53,23 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
    *                 we need it
    */
   public LegacyCompatCursorWrapper(Cursor cursor, String mimeType) {
+    this(cursor, mimeType, null);
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param cursor the Cursor to be wrapped
+   * @param mimeType the MIME type of the content represented
+   *                 by the Uri that generated this Cursor, should
+   *                 we need it
+   * @param uriForDataColumn Uri to return for the _DATA column
+   */
+  public LegacyCompatCursorWrapper(Cursor cursor, String mimeType,
+                                   Uri uriForDataColumn) {
     super(cursor);
+
+    this.uriForDataColumn=uriForDataColumn;
 
     if (cursor.getColumnIndex(DATA)>=0) {
       fakeDataColumn=-1;
@@ -154,7 +172,11 @@ public class LegacyCompatCursorWrapper extends CursorWrapper {
   @Override
   public String getString(int columnIndex) {
     if (!cursorHasDataColumn() && columnIndex==fakeDataColumn) {
-      return(null); // yes, we have no _data, we have no _data today
+      if (uriForDataColumn!=null) {
+        return(uriForDataColumn.toString());
+      }
+
+      return(null);
     }
 
     if (!cursorHasMimeTypeColumn() && columnIndex==fakeMimeTypeColumn) {
