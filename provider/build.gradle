@@ -30,6 +30,22 @@ if (project.hasProperty('PUBLISH_GROUP_ID')) {
         task.exclude('com/commonsware/cwac/**/BuildConfig.**')
     }
 
+    task sourcesJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier = 'sources'
+    }
+
+    task javadoc(type: Javadoc) {
+        failOnError  false
+        source = android.sourceSets.main.java.sourceFiles
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from javadoc.destinationDir
+    }
+
     apply plugin: 'maven'
 
     uploadArchives {
