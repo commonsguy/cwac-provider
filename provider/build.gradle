@@ -1,17 +1,23 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         testApplicationId "com.commonsware.cwac.provider.test"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    buildTypes {
+        debug {
+            testCoverageEnabled = true
+        }
+    }
 }
 
 dependencies {
-    androidTestCompile 'com.android.support.test:rules:0.3'
+    androidTestCompile 'com.android.support.test:rules:0.5'
 }
 
 if (project.hasProperty('PUBLISH_GROUP_ID')) {
