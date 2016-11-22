@@ -67,6 +67,7 @@ public class StreamProvider extends ContentProvider {
   private static final String TAG_ASSET="asset";
   private static final String ATTR_NAME="name";
   private static final String ATTR_PATH="path";
+  private static final String ATTR_READ_ONLY="readOnly";
   private static final String PREF_URI_PREFIX="uriPrefix";
 
   private static ConcurrentHashMap<String, SoftReference<StreamProvider>> INSTANCES=
@@ -373,6 +374,8 @@ public class StreamProvider extends ContentProvider {
           }
 
           String path=in.getAttributeValue(null, ATTR_PATH);
+          boolean readOnly=
+            Boolean.parseBoolean(in.getAttributeValue(null, ATTR_READ_ONLY));
           HashMap<String, String> attrs=new HashMap<String, String>();
 
           for (int i=0;i<in.getAttributeCount();i++) {
@@ -380,7 +383,7 @@ public class StreamProvider extends ContentProvider {
           }
 
           StreamStrategy strategy=
-            buildStrategy(context, tag, name, path, attrs);
+            buildStrategy(context, tag, name, path, readOnly, attrs);
 
           if (strategy != null) {
             result.add(name, strategy);
@@ -438,6 +441,7 @@ public class StreamProvider extends ContentProvider {
    */
   protected StreamStrategy buildStrategy(Context context, String tag,
                                          String name, String path,
+                                         boolean readOnly,
                                          HashMap<String, String> attrs)
     throws IOException {
     StreamStrategy result;
@@ -449,7 +453,7 @@ public class StreamProvider extends ContentProvider {
       return(new AssetStrategy(context, path));
     }
     else {
-      result=buildLocalStrategy(context, tag, name, path);
+      result=buildLocalStrategy(context, tag, name, path, readOnly);
     }
 
     return(result);
@@ -457,7 +461,7 @@ public class StreamProvider extends ContentProvider {
 
   private StreamStrategy buildLocalStrategy(Context context,
                                               String tag, String name,
-                                              String path)
+                                              String path, boolean readOnly)
     throws IOException {
     File target=null;
 
@@ -483,7 +487,7 @@ public class StreamProvider extends ContentProvider {
     }
 
     if (target != null) {
-      return(new LocalPathStrategy(name, target));
+      return(new LocalPathStrategy(name, target, readOnly));
     }
 
     return(null);

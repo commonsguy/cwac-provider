@@ -12,6 +12,8 @@
 
 	<files-path name="test-standard" path="foo"/>
 
+	<files-path name="test-read-only" path="ro" readOnly="true"/>
+
 	<raw-resource
 		name="test-raw"
 		path="something"/>

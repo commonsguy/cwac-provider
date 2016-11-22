@@ -18,10 +18,10 @@ import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
 import android.util.Log;
 import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.DataInputStream;
 import java.io.EOFException;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -82,6 +83,29 @@ abstract class AbstractReadOnlyProviderTest {
         Assert.assertTrue(
           c.getType(sizeCol)==Cursor.FIELD_TYPE_INTEGER);
         Assert.assertTrue(c.getInt(sizeCol)>0);
+      }
+    }
+  }
+
+  @Test
+  public void testCannotWrite() throws IOException {
+    for (Uri root : ROOTS) {
+      Uri source=getStreamSource(root);
+
+      try {
+        ParcelFileDescriptor pfd=
+          InstrumentationRegistry
+            .getContext()
+            .getContentResolver()
+            .openFileDescriptor(source, "rw");
+        pfd.close();
+        Assert.fail("expected exception, did not get one");
+      }
+      catch (FileNotFoundException e) {
+        if (!e.getMessage().equals("Not a whole file") &&
+          !e.getMessage().equals("Invalid mode for read-only content")) {
+          throw e;
+        }
       }
     }
   }

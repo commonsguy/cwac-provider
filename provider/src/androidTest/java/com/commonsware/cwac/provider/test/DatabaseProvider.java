@@ -27,14 +27,14 @@ public class DatabaseProvider extends StreamProvider {
   @Override
   protected StreamStrategy buildStrategy(Context context,
                                          String tag, String name,
-                                         String path,
+                                         String path, boolean readOnly,
                                          HashMap<String, String> attrs)
     throws IOException {
     if (TAG.equals(tag)) {
       return(new LocalPathStrategy(name,
-        context.getDatabasePath(path)));
+        context.getDatabasePath(path), readOnly));
     }
 
-    return(super.buildStrategy(context, tag, name, path, attrs));
+    return(super.buildStrategy(context, tag, name, path, readOnly, attrs));
   }
 }

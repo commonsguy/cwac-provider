@@ -32,6 +32,7 @@ import java.io.IOException;
 public class LocalPathStrategy implements StreamStrategy {
   private final File root;
   private final String name;
+  private final boolean readOnly;
 
   /**
    * Constructor.
@@ -39,11 +40,14 @@ public class LocalPathStrategy implements StreamStrategy {
    * @param name name of first path segment of Uri values (not
    *             counting the prefix, if any)
    * @param root directory or file from which to serve
+   * @param readOnly  true if should only allow read access, false otherwise
    * @throws IOException
    */
-  public LocalPathStrategy(String name, File root) throws IOException {
+  public LocalPathStrategy(String name, File root, boolean readOnly)
+    throws IOException {
     this.root=root.getCanonicalFile();
     this.name=name;
+    this.readOnly=readOnly;
   }
 
   /**
@@ -106,7 +110,7 @@ public class LocalPathStrategy implements StreamStrategy {
    */
   @Override
   public boolean canDelete(Uri uri) {
-    return(getFileForUri(uri).exists());
+    return(!readOnly && getFileForUri(uri).exists());
   }
 
   /**
@@ -114,7 +118,9 @@ public class LocalPathStrategy implements StreamStrategy {
    */
   @Override
   public void delete(Uri uri) {
-    getFileForUri(uri).delete();
+    if (!readOnly) {
+      getFileForUri(uri).delete();
+    }
   }
 
   /**
@@ -123,6 +129,10 @@ public class LocalPathStrategy implements StreamStrategy {
   @Override
   public ParcelFileDescriptor openFile(Uri uri, String mode)
     throws FileNotFoundException {
+    if (readOnly && !"r".equals(mode)) {
+      throw new FileNotFoundException("Invalid mode for read-only content");
+    }
+
     final File file=getFileForUri(uri);
     final int fileMode=modeToMode(mode);
     
