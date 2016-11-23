@@ -14,6 +14,8 @@
 
 	<files-path name="test-read-only" path="ro" readOnly="true"/>
 
+	<dir-path name="test-dir" dir="app_data" path="ic_launcher.png" readOnly="true"/>
+
 	<raw-resource
 		name="test-raw"
 		path="something"/>

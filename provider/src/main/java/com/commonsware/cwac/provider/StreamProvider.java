@@ -27,6 +27,7 @@ import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
@@ -65,9 +66,11 @@ public class StreamProvider extends ContentProvider {
       "external-cache-path";
   private static final String TAG_RAW="raw-resource";
   private static final String TAG_ASSET="asset";
+  private static final String TAG_DIR_PATH="dir-path";
   private static final String ATTR_NAME="name";
   private static final String ATTR_PATH="path";
   private static final String ATTR_READ_ONLY="readOnly";
+  private static final String ATTR_DIR="dir";
   private static final String PREF_URI_PREFIX="uriPrefix";
 
   private static ConcurrentHashMap<String, SoftReference<StreamProvider>> INSTANCES=
@@ -453,7 +456,7 @@ public class StreamProvider extends ContentProvider {
       return(new AssetStrategy(context, path));
     }
     else {
-      result=buildLocalStrategy(context, tag, name, path, readOnly);
+      result=buildLocalStrategy(context, tag, name, path, readOnly, attrs);
     }
 
     return(result);
@@ -461,7 +464,8 @@ public class StreamProvider extends ContentProvider {
 
   private StreamStrategy buildLocalStrategy(Context context,
                                               String tag, String name,
-                                              String path, boolean readOnly)
+                                              String path, boolean readOnly,
+                                              HashMap<String, String> attrs)
     throws IOException {
     File target=null;
 
@@ -472,6 +476,21 @@ public class StreamProvider extends ContentProvider {
       }
 
       target=buildPath(context.getFilesDir(), path);
+    }
+    else if (TAG_DIR_PATH.equals(tag)) {
+      if (TextUtils.isEmpty(path)) {
+        throw new
+          SecurityException("Cannot serve files from all of getDir()");
+      }
+
+      String dir=attrs.get(ATTR_DIR);
+
+      if (TextUtils.isEmpty(dir)) {
+        throw new
+          SecurityException("You need to provide the dir attribute, to indicate which directory to serve");
+      }
+
+      target=buildPath(context.getDir(dir, Context.MODE_PRIVATE), path);
     }
     else if (TAG_CACHE_PATH.equals(tag)) {
       target=buildPath(context.getCacheDir(), path);

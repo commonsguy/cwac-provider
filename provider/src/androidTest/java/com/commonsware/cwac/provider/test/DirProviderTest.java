@@ -14,6 +14,7 @@
 
 package com.commonsware.cwac.provider.test;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.test.InstrumentationRegistry;
 import org.junit.BeforeClass;
@@ -22,17 +23,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ReadOnlyFileProviderTest extends
+public class DirProviderTest extends
     AbstractReadOnlyProviderTest {
   @BeforeClass
   static public void initTestFile() throws IOException {
     InputStream original=
       InstrumentationRegistry.getContext().getAssets().open("ic_launcher.png");
-    File ro=new File(InstrumentationRegistry.getContext().getFilesDir(), "ro");
+    File dir=
+      InstrumentationRegistry.getContext().getDir("app_data", Context.MODE_PRIVATE);
 
-    ro.mkdirs();
+    dir.mkdirs();
 
-    File dest=new File(ro, "ic_launcher.png");
+    File dest=new File(dir, "ic_launcher.png");
     copy(original, dest);
   }
 
@@ -43,7 +45,7 @@ public class ReadOnlyFileProviderTest extends
 
   @Override
   public Uri getStreamSource(Uri root) {
-    Uri result=root.buildUpon().appendEncodedPath("test-read-only/ic_launcher.png").build();
+    Uri result=root.buildUpon().appendEncodedPath("test-dir/ic_launcher.png").build();
 
     return(result);
   }
