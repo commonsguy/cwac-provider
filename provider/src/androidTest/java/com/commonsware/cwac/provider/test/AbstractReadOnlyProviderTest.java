@@ -14,6 +14,8 @@
 
 package com.commonsware.cwac.provider.test;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources.NotFoundException;
 import android.database.Cursor;
 import android.net.Uri;
@@ -25,6 +27,7 @@ import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.DataInputStream;
@@ -47,6 +50,15 @@ abstract class AbstractReadOnlyProviderTest {
         StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".plain")),
     Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no")
   };
+
+  @BeforeClass
+  static public void resetPrefs() {
+    SharedPreferences prefs=InstrumentationRegistry.getTargetContext().getSharedPreferences(
+      com.commonsware.cwac.provider.BuildConfig.APPLICATION_ID,
+      Context.MODE_PRIVATE);
+
+    prefs.edit().clear().commit();
+  }
 
   @Test
   public void testRead() throws NotFoundException, IOException {
