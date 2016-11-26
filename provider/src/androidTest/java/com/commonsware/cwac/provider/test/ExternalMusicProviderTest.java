@@ -21,17 +21,17 @@ import com.commonsware.cwac.provider.StreamProvider;
 import org.junit.Assert;
 import java.io.File;
 
-public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
+public class ExternalMusicProviderTest extends AbstractReadWriteProviderTest {
   @Override
   public String getPrefix() {
-    return("test-external-files");
+    return("test-music-files");
   }
 
   @Override
   void assertFileExists(String fileName) {
     File testFile=
         new File(InstrumentationRegistry.getContext().getExternalFilesDir(
-          Environment.DIRECTORY_DOCUMENTS), fileName);
+          Environment.DIRECTORY_MUSIC), fileName);
 
     Assert.assertTrue(testFile.exists());
   }
@@ -40,7 +40,7 @@ public class ExternalFilesProviderTest extends AbstractReadWriteProviderTest {
   void assertUriBuild(String filename, Uri original) {
     File testFile=
       new File(InstrumentationRegistry.getContext().getExternalFilesDir(
-        Environment.DIRECTORY_DOCUMENTS), filename);
+        Environment.DIRECTORY_MUSIC), filename);
     Uri test=
       StreamProvider.getUriForFile(original.getAuthority(),
         testFile);

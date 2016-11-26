@@ -86,7 +86,7 @@ Google's `FileProvider` supports:
 
 - `<cache-path>` for serving files from your app's `getCacheDir()`
 
-- `<external-files-path>` for serving files from `getExternalFilesDir(null)`
+- `<external-files-path>` for serving files from `getExternalFilesDir()`
 
 - `<external-cache-path>` for serving files from `getExternalCacheDir()`
 
@@ -105,6 +105,27 @@ so you do not accidentally serve everything under `getFilesDir()`.
 
 Also, each can optionally take a `readOnly` attribute. If this is set to
 `true`, then the files will be readable, but not writeable.
+
+`<external-files-path>` also can take an optional `dir` attribute. If
+missing, the files are served from `getExternalFilesDir()`. If a valid
+value of `dir` is supplied, that value is passed into `getExternalFilesDir()`.
+As such, `dir` is limited to be one of the `Environment.DIRECTORY_*` constants:
+                             
+ - `Alarms`
+ - `DCIM`
+ - `Documents`
+ - `Download`
+ - `Movies`
+ - `Music`
+ - `Notifications`
+ - `Pictures`
+ - `Podcasts`
+ - `Ringtones`
+
+However, you cannot have *both* `<external-files-path>` with no `dir`
+(indicating that you are serving from `getExternalFilesDir(null)`)
+*and* one or more `<external-files-path>` elements with `dir` values,
+as they will conflict.
 
 `StreamProvider` adds support for:
 
@@ -126,18 +147,8 @@ In the case of `<dir-path>`, two attributes are required:
 directory identified by `dir`
 
 In the case of `<external-public-path>`, `dir` is required. It needs to be
-the string value of one of the `Environment.DIRECTORY_*` constants:
-
-- `Alarms`
-- `DCIM`
-- `Documents`
-- `Download`
-- `Movies`
-- `Music`
-- `Notifications`
-- `Pictures`
-- `Podcasts`
-- `Ringtones`
+the string value of one of the `Environment.DIRECTORY_*` constants, listed
+above.
 
 Of course, your metadata can have one or more of each of these types as needed
 to declare what you want to be served.

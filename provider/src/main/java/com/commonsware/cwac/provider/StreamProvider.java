@@ -56,7 +56,7 @@ public class StreamProvider extends ContentProvider {
   private static final String[] VALID_DIRS={
     Environment.DIRECTORY_ALARMS,
     Environment.DIRECTORY_DCIM,
-    Environment.DIRECTORY_DOCUMENTS,
+    "Documents",
     Environment.DIRECTORY_DOWNLOADS,
     Environment.DIRECTORY_MOVIES,
     Environment.DIRECTORY_MUSIC,
@@ -98,6 +98,8 @@ public class StreamProvider extends ContentProvider {
   private boolean useLegacyCursorWrapper=false;
   private boolean useUriForDataColumn=false;
   private SharedPreferences prefs;
+  private boolean seenExternalFilesPathNoDir=false;
+  private boolean seenExternalFilesPathWithDir=false;
 
   /**
    * Registers a StreamProvider for use with getUriForFile()
@@ -518,7 +520,28 @@ public class StreamProvider extends ContentProvider {
       target=buildPath(Environment.getExternalStorageDirectory(), path);
     }
     else if (TAG_EXTERNAL_FILES.equals(tag)) {
-      target=buildPath(context.getExternalFilesDir(null), path);
+      String dir=attrs.get(ATTR_DIR);
+
+      if (TextUtils.isEmpty(dir)) {
+        dir=null;
+      }
+
+      if (dir!=null && Arrays.binarySearch(VALID_DIRS, dir)<0) {
+        throw new SecurityException(dir+" is not a valid value, either leave off or choose from: "+TextUtils.join(",", VALID_DIRS));
+      }
+
+      if (dir==null) {
+        seenExternalFilesPathNoDir=true;
+      }
+      else {
+        seenExternalFilesPathWithDir=true;
+      }
+
+      if (seenExternalFilesPathNoDir && seenExternalFilesPathWithDir) {
+        throw new IllegalStateException("Cannot have <external-files-path> without dir attribute and another <external-files-path> with a dir attribute");
+      }
+
+      target=buildPath(context.getExternalFilesDir(dir), path);
     }
     else if (TAG_EXTERNAL_CACHE_FILES.equals(tag)) {
       target=buildPath(context.getExternalCacheDir(), path);
