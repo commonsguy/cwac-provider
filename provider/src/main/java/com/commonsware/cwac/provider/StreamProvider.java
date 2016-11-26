@@ -38,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -52,6 +53,18 @@ import org.xmlpull.v1.XmlPullParserException;
 public class StreamProvider extends ContentProvider {
   private static final String[] COLUMNS= {
       OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
+  private static final String[] VALID_DIRS={
+    Environment.DIRECTORY_ALARMS,
+    Environment.DIRECTORY_DCIM,
+    Environment.DIRECTORY_DOCUMENTS,
+    Environment.DIRECTORY_DOWNLOADS,
+    Environment.DIRECTORY_MOVIES,
+    Environment.DIRECTORY_MUSIC,
+    Environment.DIRECTORY_NOTIFICATIONS,
+    Environment.DIRECTORY_PICTURES,
+    Environment.DIRECTORY_PODCASTS,
+    Environment.DIRECTORY_RINGTONES
+  };
   private static final String META_DATA_FILE_PROVIDER_PATHS=
       "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
   private static final String META_DATA_USE_LEGACY_CURSOR_WRAPPER=
@@ -64,6 +77,8 @@ public class StreamProvider extends ContentProvider {
   private static final String TAG_EXTERNAL_FILES="external-files-path";
   private static final String TAG_EXTERNAL_CACHE_FILES=
       "external-cache-path";
+  private static final String TAG_EXTERNAL_PUBLIC_FILES=
+    "external-public-path";
   private static final String TAG_RAW="raw-resource";
   private static final String TAG_ASSET="asset";
   private static final String TAG_DIR_PATH="dir-path";
@@ -72,6 +87,10 @@ public class StreamProvider extends ContentProvider {
   private static final String ATTR_READ_ONLY="readOnly";
   private static final String ATTR_DIR="dir";
   private static final String PREF_URI_PREFIX="uriPrefix";
+
+  static {
+    Arrays.sort(VALID_DIRS);
+  }
 
   private static ConcurrentHashMap<String, SoftReference<StreamProvider>> INSTANCES=
     new ConcurrentHashMap<String, SoftReference<StreamProvider>>();
@@ -503,6 +522,20 @@ public class StreamProvider extends ContentProvider {
     }
     else if (TAG_EXTERNAL_CACHE_FILES.equals(tag)) {
       target=buildPath(context.getExternalCacheDir(), path);
+    }
+    else if (TAG_EXTERNAL_PUBLIC_FILES.equals(tag)) {
+      String dir=attrs.get(ATTR_DIR);
+
+      if (TextUtils.isEmpty(dir)) {
+        throw new
+          SecurityException("You need to provide the dir attribute, to indicate which directory to serve, from a valid Environment value");
+      }
+
+      if (Arrays.binarySearch(VALID_DIRS, dir)<0) {
+        throw new SecurityException(dir+" is not a valid value, choose from: "+TextUtils.join(",", VALID_DIRS));
+      }
+
+      target=buildPath(Environment.getExternalStoragePublicDirectory(dir), path);
     }
 
     if (target != null) {

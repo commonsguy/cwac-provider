@@ -86,6 +86,10 @@ Google's `FileProvider` supports:
 
 - `<cache-path>` for serving files from your app's `getCacheDir()`
 
+- `<external-files-path>` for serving files from `getExternalFilesDir(null)`
+
+- `<external-cache-path>` for serving files from `getExternalCacheDir()`
+
 Each of those take a `name` attribute, indicating the first path segment of the `Uri`
 that should identify this particular source of files. For example, a
 `name` of `foo` would mean that `content://your.authority.here/foo/...` would
@@ -96,18 +100,44 @@ under the element-defined root to use as the source of files, rather than
 the root itself. So, a `<files-path>` with a `path="stuff"` attribute would
 serve files from the `stuff/` subdirectory within `getFilesDir()`. Note
 that `path` can point to a file as well, to limit access to a single file
-rather than a directory.
+rather than a directory. Note that `path` is required for `<files-path>`,
+so you do not accidentally serve everything under `getFilesDir()`.
+
+Also, each can optionally take a `readOnly` attribute. If this is set to
+`true`, then the files will be readable, but not writeable.
 
 `StreamProvider` adds support for:
-
-- `<external-files-path>` for serving files from `getExternalFilesDir(null)`
-
-- `<external-cache-path>` for serving files from `getExternalCacheDir()`
 
 - `<raw-resource>` for serving a particular raw resource, where the `path`
 is the name of the raw resource (without file extension)
 
 - `<asset>` for serving files from `assets/`
+
+- `<dir-path>`, for serving files from locations identified by `getDir()`
+
+- `<external-public-path>`, for serving files from locations identified by
+`Environment.getExternalStoragePublicDirectory()`
+
+In the case of `<dir-path>`, two attributes are required:
+
+- `dir`, which indicates what directory to serve (this is passed into `getDir()`)
+
+- `path`, which serves its normal role, to determine what to serve from the
+directory identified by `dir`
+
+In the case of `<external-public-path>`, `dir` is required. It needs to be
+the string value of one of the `Environment.DIRECTORY_*` constants:
+
+- `Alarms`
+- `DCIM`
+- `Documents`
+- `Download`
+- `Movies`
+- `Music`
+- `Notifications`
+- `Pictures`
+- `Podcasts`
+- `Ringtones`
 
 Of course, your metadata can have one or more of each of these types as needed
 to declare what you want to be served.
@@ -221,6 +251,21 @@ Compared to `FileProvider`, `StreamProvider` has the following limitations:
 from `getFilesDir()`, for security reasons. The `path` attribute
 is required.
 
+### Upgrading to 0.5.0+ From Earlier Versions
+
+If you created your own subclass of `StreamProvider` and overrode
+`buildStrategy()`, note that the method signature has changed and is now:
+
+```java
+protected StreamStrategy buildStrategy(Context context,
+                                     String tag, String name,
+                                     String path, boolean readOnly,
+                                     HashMap<String, String> attrs)
+```
+
+`readOnly` is a boolean indicating if this content should be treated as read-only
+(`true`) or read-write (`false`).
+
 ### Upgrading to 0.4.0+ From Earlier Versions
 
 If you are upgrading an existing `StreamProvider` implementation
@@ -293,7 +338,12 @@ The [contribution guidelines](CONTRIBUTING.md)
 provide some suggestions for how to create a bug report that will get
 the problem fixed the fastest.
 
-Do not ask for help via Twitter.
+You are also welcome to join
+[the CommonsWare Community](https://community.commonsware.com/)
+and post questions
+and ideas to [the CWAC category](https://community.commonsware.com/c/cwac).
+
+Do not ask for help via social media.
 
 Also, if you plan on hacking
 on the code with an eye for contributing something back,

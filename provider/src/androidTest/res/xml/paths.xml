@@ -6,6 +6,8 @@
 
 	<external-files-path name="test-external-files"/>
 
+	<external-public-path dir="Download" name="test-download-files"/>
+
 	<external-cache-path name="test-external-cache"/>
 
 	<cache-path name="test-cache"/>
