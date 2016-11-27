@@ -48,7 +48,7 @@ public class DatabaseProvider extends StreamProvider {
   @Override
   protected StreamStrategy buildStrategy(Context context,
                                          String tag, String name,
-                                         String path,
+                                         String path, boolean readOnly,
                                          HashMap<String, String> attrs)
     throws IOException {
     if (TAG.equals(tag)) {
@@ -74,12 +74,20 @@ this request
 
 - the value of the `path` attribute, which can be `null`
 
+- a boolean indicating if this content should be treated as read-only
+(`true`) or read-write (`false`)
+
 - a `HashMap` of all attributes, in case you wish to have some
 custom ones
 
 Either return your own `StreamStrategy` instance based off of
 this information or chain to the superclass' implementation, so
 `StreamProvider` can handle the stock tags.
+
+If your provider is intrinsically read-only (i.e., it is impossible to modify
+the content), you can ignore the `readOnly` flag. If, however, your content
+could be modified, and you support modification, please honor the `readOnly`
+flag and block modifications/deletions when that is set to `true`.
 
 ## Supporting Other Stream Strategies
 

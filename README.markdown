@@ -176,6 +176,21 @@ in the result set, with a `null` value, to try to cajole these legacy
 apps into using the `Uri` as they are supposed to: via `ContentResolver`
 and `openInputStream()`.
 
+Similarly, you can add this `<meta-data>` element to the `<provider>`:
+
+```xml
+<meta-data
+  android:name="com.commonsware.cwac.provider.USE_URI_FOR_DATA_COLUMN"
+  android:value="true"/>
+```
+
+Clients of a streaming `ContentProvider` should not be assuming that they
+can `query()` for a `_DATA` column. Alas, some developers still do, thinking
+that all `content:` `Uri` values come from the `MediaStore`. By default,
+`StreamProvider` returns `null` for the `_DATA` column, should somebody
+`query()` for it. However, with the above `<meta-data>` element, `StreamProvider`
+will return the `Uri` used for the `query()` as the value for `_DATA`.
+
 ### Gradle Settings
 
 Starting with version 0.3.0 of the library, for files you are looking
@@ -277,6 +292,24 @@ protected StreamStrategy buildStrategy(Context context,
 `readOnly` is a boolean indicating if this content should be treated as read-only
 (`true`) or read-write (`false`).
 
+Also, if you are using `LegacyCompatCursorWrapper`, it now has an additional,
+three-parameter constructor:
+
+```java
+public LegacyCompatCursorWrapper(Cursor cursor, String mimeType,
+                                   Uri uriForDataColumn)
+```
+
+That third parameter should be the `Uri` to use for the value of the `_DATA`
+column, should somebody attempt to request that column from this `Cursor`.
+The default value is `null`. A likely alternative would be whatever `Uri`
+generated this `Cursor` (e.g., from the provider's `query()` implementation).
+
+Also, if you are using `LegacyCompatCursorWrapper`, its fields are now marked
+`final private`. If you had been referencing those fields, and this now breaks
+your code, please file an issue and explain your use case, so an appropriate
+API can be added to `LegacyCompatCursorWrapper`.
+
 ### Upgrading to 0.4.0+ From Earlier Versions
 
 If you are upgrading an existing `StreamProvider` implementation
@@ -315,7 +348,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.4.4 of this module, meaning it is pretty new.
+This is version v0.5.0 of this module, meaning it is pretty new.
 
 Demo
 ----
