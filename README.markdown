@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.4.4'
+    compile 'com.commonsware.cwac:provider:0.5.0'
 }
 ```
 
@@ -399,6 +399,11 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.5.0:
+  - Added support for `Environment.getExternalStoragePublicDirectory()`
+  - Added support for `getDir()`
+  - Added support for non-`null` versions of `getExternalFilesDir()`
+  - Added `com.commonsware.cwac.provider.USE_URI_FOR_DATA_COLUMN` option per [issue #20](https://github.com/commonsguy/cwac-provider/issues/20)
 - v0.4.4: fix for [`CompositeStreamStrategy` bug](https://github.com/commonsguy/cwac-provider/issues/18)
 - v0.4.3: exposed [yet another method for extending `StreamProvider`](https://github.com/commonsguy/cwac-provider/issues/15#issuecomment-238407330) 
 - v0.4.2: exposed [a few more methods for extending `StreamProvider`](https://github.com/commonsguy/cwac-provider/issues/15#issuecomment-238405362) 
