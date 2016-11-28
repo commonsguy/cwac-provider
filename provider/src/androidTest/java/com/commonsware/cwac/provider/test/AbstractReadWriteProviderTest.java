@@ -41,6 +41,16 @@ abstract class AbstractReadWriteProviderTest {
   }
 
   @Test
+  public void testWriteAndRead2() throws NotFoundException, IOException {
+    doWriteAndRead("%20ic_launcher.png", "%20__test_output.png");
+  }
+
+  @Test
+  public void testWriteAndRead3() throws NotFoundException, IOException {
+    doWriteAndRead("ic_%20launcher.png", "__test_%20output.png");
+  }
+
+  @Test
   public void testWriteAndReadLarge() throws NotFoundException, IOException {
     doWriteAndRead("test.mp4", "__test_output.mp4");
   }
@@ -50,7 +60,7 @@ abstract class AbstractReadWriteProviderTest {
     for (Uri root : AbstractReadOnlyProviderTest.ROOTS) {
       Uri output=
         root.buildUpon().appendPath(getPrefix())
-          .appendEncodedPath(out).build();
+          .appendPath(out).build();
 
       try {
         OutputStream testOutput=
