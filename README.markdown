@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.5.0'
+    compile 'com.commonsware.cwac:provider:0.5.1'
 }
 ```
 
@@ -348,7 +348,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.5.0 of this module, meaning it is pretty new.
+This is version v0.5.1 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -357,6 +357,8 @@ of `StreamProvider`.
 
 Additional Documentation
 ------------------------
+[JavaDocs are available](http://javadocs.commonsware.com/cwac/provider/index.html).
+
 [The Busy Coder's Guide to Android Development](https://commonsware.com/Android)
 contains a section dedicated to `StreamProvider`. It also uses
 `LegacyCompatCursorWrapper` in all of its `FileProvider` samples.
@@ -399,6 +401,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.5.1: fixed [bug](https://github.com/commonsguy/cwac-provider/issues/30) blocking use of multiple authorities in a single provider
 - v0.5.0:
   - Added support for `Environment.getExternalStoragePublicDirectory()`
   - Added support for `getDir()`
