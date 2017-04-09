@@ -13,7 +13,7 @@ dependencies {
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '25.0.2'
 
     aaptOptions {
         noCompress 'pdf', 'mp4', 'ogg'
