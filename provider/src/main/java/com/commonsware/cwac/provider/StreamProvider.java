@@ -196,7 +196,13 @@ public class StreamProvider extends ContentProvider {
     checkSecurity(info);
 
     try {
-      strategy=parseStreamStrategy(context, info.authority);
+      strategy=new CompositeStreamStrategy();
+
+      String[] authorities=info.authority.split(";");
+
+      for (String authority : authorities) {
+        parseStreamStrategy(strategy, context, authority);
+      }
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to parse "
@@ -363,10 +369,10 @@ public class StreamProvider extends ContentProvider {
     return(super.openAssetFile(uri, mode));
   }
 
-  private CompositeStreamStrategy parseStreamStrategy(Context context,
+  private CompositeStreamStrategy parseStreamStrategy(final CompositeStreamStrategy result,
+                                                      Context context,
                                                       String authority)
     throws IOException, XmlPullParserException {
-    final CompositeStreamStrategy result=buildCompositeStrategy();
     final ProviderInfo info=
         context.getPackageManager()
                .resolveContentProvider(authority,

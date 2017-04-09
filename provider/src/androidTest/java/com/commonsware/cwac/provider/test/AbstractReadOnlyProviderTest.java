@@ -48,6 +48,8 @@ abstract class AbstractReadOnlyProviderTest {
         StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".fixed")),
     Uri.parse("content://"+BuildConfig.APPLICATION_ID+".plain/"+
         StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".plain")),
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".second/"+
+      StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".second")),
     Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no")
   };
 
