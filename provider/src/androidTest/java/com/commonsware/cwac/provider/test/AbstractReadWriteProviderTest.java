@@ -14,13 +14,16 @@
 
 package com.commonsware.cwac.provider.test;
 
+import android.content.Context;
 import android.content.res.Resources.NotFoundException;
 import android.net.Uri;
+import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.AndroidTestCase;
 import android.util.Log;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.io.DataInputStream;
@@ -34,6 +37,19 @@ abstract class AbstractReadWriteProviderTest {
   abstract public String getPrefix();
   abstract void assertFileExists(String filename);
   abstract void assertUriBuild(String filename, Uri original);
+
+  @BeforeClass
+  static public void resetPrefs() {
+    Context target=InstrumentationRegistry.getTargetContext();
+
+    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+      InstrumentationRegistry
+        .getInstrumentation()
+        .getUiAutomation()
+        .executeShellCommand(String.format("pm grant %s android.permission.WRITE_EXTERNAL_STORAGE",
+          target.getPackageName()));
+    }
+  }
 
   @Test
   public void testWriteAndRead() throws NotFoundException, IOException {

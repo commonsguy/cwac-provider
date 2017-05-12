@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class ReadOnlyFileProviderTest extends
+public class ReadOnlyStrategyTest extends
     AbstractReadOnlyProviderTest {
   @BeforeClass
   static public void initTestFile() throws IOException {

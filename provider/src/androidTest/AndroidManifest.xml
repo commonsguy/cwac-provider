@@ -20,6 +20,13 @@
 				android:resource="@xml/paths"/>
 		</provider>
 		<provider
+			android:name="com.commonsware.cwac.provider.test.TestReadOnlyStreamProvider"
+			android:authorities="${applicationId}.readonly">
+			<meta-data
+				android:name="com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS"
+				android:resource="@xml/paths"/>
+		</provider>
+		<provider
 			android:name="com.commonsware.cwac.provider.test.FixedPrefixStreamProvider"
 			android:authorities="${applicationId}.fixed"
 			android:exported="false"

@@ -1,16 +1,16 @@
 /***
-  Copyright (C) 2013 The Android Open Source Project
-  Portions Copyright (c) 2013-2016 CommonsWare, LLC
-  
-  Licensed under the Apache License, Version 2.0 (the "License"); you may
-  not use this file except in compliance with the License. You may obtain
-  a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
+ Copyright (C) 2013 The Android Open Source Project
+ Portions Copyright (c) 2013-2016 CommonsWare, LLC
+
+ Licensed under the Apache License, Version 2.0 (the "License"); you may
+ not use this file except in compliance with the License. You may obtain
+ a copy of the License at
+ http://www.apache.org/licenses/LICENSE-2.0
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
  */
 
 package com.commonsware.cwac.provider;
@@ -27,7 +27,6 @@ import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
@@ -52,7 +51,7 @@ import org.xmlpull.v1.XmlPullParserException;
  */
 public class StreamProvider extends ContentProvider {
   private static final String[] COLUMNS= {
-      OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
+    OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE };
   private static final String[] VALID_DIRS={
     Environment.DIRECTORY_ALARMS,
     Environment.DIRECTORY_DCIM,
@@ -66,9 +65,9 @@ public class StreamProvider extends ContentProvider {
     Environment.DIRECTORY_RINGTONES
   };
   private static final String META_DATA_FILE_PROVIDER_PATHS=
-      "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
+    "com.commonsware.cwac.provider.STREAM_PROVIDER_PATHS";
   private static final String META_DATA_USE_LEGACY_CURSOR_WRAPPER=
-      "com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER";
+    "com.commonsware.cwac.provider.USE_LEGACY_CURSOR_WRAPPER";
   private static final String META_DATA_USE_URI_FOR_DATA_COLUMN=
     "com.commonsware.cwac.provider.USE_URI_FOR_DATA_COLUMN";
   private static final String TAG_FILES_PATH="files-path";
@@ -76,7 +75,7 @@ public class StreamProvider extends ContentProvider {
   private static final String TAG_EXTERNAL="external-path";
   private static final String TAG_EXTERNAL_FILES="external-files-path";
   private static final String TAG_EXTERNAL_CACHE_FILES=
-      "external-cache-path";
+    "external-cache-path";
   private static final String TAG_EXTERNAL_PUBLIC_FILES=
     "external-public-path";
   private static final String TAG_RAW="raw-resource";
@@ -100,6 +99,7 @@ public class StreamProvider extends ContentProvider {
   private SharedPreferences prefs;
   private boolean seenExternalFilesPathNoDir=false;
   private boolean seenExternalFilesPathWithDir=false;
+  private boolean allReadOnly=false;
 
   /**
    * Registers a StreamProvider for use with getUriForFile()
@@ -206,25 +206,21 @@ public class StreamProvider extends ContentProvider {
     }
     catch (Exception e) {
       throw new IllegalArgumentException("Failed to parse "
-          + META_DATA_FILE_PROVIDER_PATHS + " meta-data", e);
+        + META_DATA_FILE_PROVIDER_PATHS + " meta-data", e);
     }
   }
 
   /**
    * Confirm that our security settings are apropos. In this case,
-   * we do not support being exported and we do require that
-   * grantUriPermissions be declared.
+   * we do not support being exported. If we are, mark the provider
+   * as read-only and log a warning to LogCat.
    *
    * @param info
    */
   protected void checkSecurity(ProviderInfo info) {
-    // Sanity check our security
     if (info.exported) {
-      throw new SecurityException("Provider must not be exported");
-    }
-
-    if (!info.grantUriPermissions) {
-      throw new SecurityException("Provider must grant Uri permissions");
+      allReadOnly=true;
+      Log.w(getClass().getSimpleName(), "Marking exported StreamProvider as read-only");
     }
   }
 
@@ -374,20 +370,20 @@ public class StreamProvider extends ContentProvider {
                                                       String authority)
     throws IOException, XmlPullParserException {
     final ProviderInfo info=
-        context.getPackageManager()
-               .resolveContentProvider(authority,
-                                       PackageManager.GET_META_DATA);
+      context.getPackageManager()
+        .resolveContentProvider(authority,
+          PackageManager.GET_META_DATA);
 
     useLegacyCursorWrapper=info.metaData.getBoolean(META_DATA_USE_LEGACY_CURSOR_WRAPPER, true);
     useUriForDataColumn=info.metaData.getBoolean(META_DATA_USE_URI_FOR_DATA_COLUMN, false);
 
     final XmlResourceParser in=
-        info.loadXmlMetaData(context.getPackageManager(),
-                             META_DATA_FILE_PROVIDER_PATHS);
+      info.loadXmlMetaData(context.getPackageManager(),
+        META_DATA_FILE_PROVIDER_PATHS);
 
     if (in == null) {
       throw new IllegalArgumentException("Missing "
-          + META_DATA_FILE_PROVIDER_PATHS + " meta-data");
+        + META_DATA_FILE_PROVIDER_PATHS + " meta-data");
     }
 
     int type;
@@ -404,7 +400,7 @@ public class StreamProvider extends ContentProvider {
           }
 
           String path=in.getAttributeValue(null, ATTR_PATH);
-          boolean readOnly=
+          boolean readOnly=allReadOnly ||
             Boolean.parseBoolean(in.getAttributeValue(null, ATTR_READ_ONLY));
           HashMap<String, String> attrs=new HashMap<String, String>();
 
@@ -419,9 +415,8 @@ public class StreamProvider extends ContentProvider {
             result.add(name, strategy);
           }
           else {
-            throw new IllegalArgumentException(
-                                               "Could not build strategy for "
-                                                   + tag);
+            throw new IllegalArgumentException("Could not build strategy for "
+              + tag);
           }
         }
       }
@@ -490,9 +485,9 @@ public class StreamProvider extends ContentProvider {
   }
 
   private StreamStrategy buildLocalStrategy(Context context,
-                                              String tag, String name,
-                                              String path, boolean readOnly,
-                                              HashMap<String, String> attrs)
+                                            String tag, String name,
+                                            String path, boolean readOnly,
+                                            HashMap<String, String> attrs)
     throws IOException {
     File target=null;
 

@@ -50,16 +50,27 @@ abstract class AbstractReadOnlyProviderTest {
         StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".plain")),
     Uri.parse("content://"+BuildConfig.APPLICATION_ID+".second/"+
       StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".second")),
-    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no")
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".no"),
+    Uri.parse("content://"+BuildConfig.APPLICATION_ID+".readonly/"+
+      StreamProvider.getUriPrefix(BuildConfig.APPLICATION_ID+".readonly")),
   };
 
   @BeforeClass
   static public void resetPrefs() {
-    SharedPreferences prefs=InstrumentationRegistry.getTargetContext().getSharedPreferences(
+    Context target=InstrumentationRegistry.getTargetContext();
+    SharedPreferences prefs=target.getSharedPreferences(
       com.commonsware.cwac.provider.BuildConfig.APPLICATION_ID,
       Context.MODE_PRIVATE);
 
     prefs.edit().clear().commit();
+
+    if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M) {
+      InstrumentationRegistry
+        .getInstrumentation()
+        .getUiAutomation()
+        .executeShellCommand(String.format("pm grant %s android.permission.READ_EXTERNAL_STORAGE",
+          target.getPackageName()));
+    }
   }
 
   @Test
