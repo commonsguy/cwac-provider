@@ -54,6 +54,11 @@ if (project.hasProperty('PUBLISH_GROUP_ID')) {
         from javadoc.destinationDir
     }
 
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+
     apply plugin: 'maven'
 
     uploadArchives {
