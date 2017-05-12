@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.commonsware.cwac:provider:0.5.1'
+    compile 'com.commonsware.cwac:provider:0.5.2'
 }
 ```
 
@@ -66,14 +66,41 @@ one or more elements describing what you want the provider to serve
   (where you fill in your desired authority name and reference to your XML
   metadata from step #1)
 
-  Notably, the provider *must not* be exported, *must* have
-  `android:grantUriPermissions="true"`, and *must* have the `<meta-data>`
+  Notably, the provider *must* have the `<meta-data>`
   element pointing to your XML metadata.
 
 - Use `FLAG_GRANT_READ_URI_PERMISSION` and `FLAG_GRANT_WRITE_URI_PERMISSION`
 in `Intent` objects you use to have third parties use the files the
 `StreamProvider` serves, to allow those apps selective, temporary access to
 the file.
+
+### Exporting and Usage Patterns
+
+If your `StreamProvider` is exported, all of your streams will be considered
+read-only, regardless of any other configuration. Mostly, this mode is here
+for cases where you need a streaming provider and cannot grant `Uri`
+permissions (e.g., [implementing a `ChooserTargetService`](http://stackoverflow.com/q/43895664/115145)).
+
+If your `StreamProvider` is not exported, and it has
+`android:grantUriPermissions` set, then you can control, on a per-`Uri`
+basis, which clients get access to your streams. This works identically
+to how `FileProvider` works. Whether a particular source of streams is
+read-only or read-write will depend on whether the stream is a file and
+your metadata configuration.
+
+Wherever possible, elect to not export the provider and use
+`FLAG_GRANT_READ_URI_PERMISSIONS` or similar techniques to selectively grant
+access to your content.
+
+Note that the exported-and-read-only rule is on a per-provider basis. If
+you have some content that needs to be published globally and others that
+are not:
+
+- Use `StreamProvider` and one `<provider>` element for one set of content,
+with one authority and `android:exported` setting
+
+- Subclass `StreamProvider` and have a separate `<provider>` element for the
+other set of content, with a separate authority and `android:exported` setting
 
 ### Metadata Elements
 
@@ -348,7 +375,7 @@ This project has no dependencies.
 
 Version
 -------
-This is version v0.5.1 of this module, meaning it is pretty new.
+This is version v0.5.2 of this module, meaning it is pretty new.
 
 Demo
 ----
@@ -401,6 +428,7 @@ of guidance here.
 
 Release Notes
 -------------
+- v0.5.2: added [exported read-only support](https://github.com/commonsguy/cwac-provider/issues/22), [published JavaDoc/source JARs in repo](https://github.com/commonsguy/cwac-provider/issues/17)
 - v0.5.1: fixed [bug](https://github.com/commonsguy/cwac-provider/issues/30) blocking use of multiple authorities in a single provider
 - v0.5.0:
   - Added support for `Environment.getExternalStoragePublicDirectory()`
