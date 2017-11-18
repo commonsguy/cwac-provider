@@ -7,13 +7,13 @@ repositories {
 }
 
 dependencies {
-    debugCompile project(':provider')
-    releaseCompile 'com.commonsware.cwac:provider:0.5.+'
+    debugImplementation project(':provider')
+    releaseImplementation 'com.commonsware.cwac:provider:0.5.2'
 }
 
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.2'
 
     aaptOptions {
         noCompress 'pdf', 'mp4', 'ogg'
