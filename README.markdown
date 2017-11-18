@@ -428,7 +428,7 @@ of guidance here.
 
 Release Notes
 -------------
-- v0.1.3: upgraded to Android Gradle Plugin 3.0.0
+- v0.5.3: upgraded to Android Gradle Plugin 3.0.0
 - v0.5.2: added [exported read-only support](https://github.com/commonsguy/cwac-provider/issues/22), [published JavaDoc/source JARs in repo](https://github.com/commonsguy/cwac-provider/issues/17)
 - v0.5.1: fixed [bug](https://github.com/commonsguy/cwac-provider/issues/30) blocking use of multiple authorities in a single provider
 - v0.5.0:
