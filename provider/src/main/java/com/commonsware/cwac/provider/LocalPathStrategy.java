@@ -184,7 +184,7 @@ public class LocalPathStrategy implements StreamStrategy {
       if (fpath.startsWith(rpath)) {
         b
           .appendPath(name)
-          .appendPath(fpath.substring(rpath.length() + 1));
+          .appendEncodedPath(fpath.substring(rpath.length() + 1));
 
         return(true);
       }
