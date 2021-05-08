@@ -1,6 +1,8 @@
 CWAC-Provider: Helping to Make Content Providers Sane
 ======================================================
 
+**UPDATE 2021-05-08**: This project is discontinued. This repository will be removed from public access on or after 1 December 2021.
+
 This project
 offers a `StreamProvider`, based on Google's
 [`FileProvider`](https://developer.android.com/reference/android/support/v4/content/FileProvider.html).
